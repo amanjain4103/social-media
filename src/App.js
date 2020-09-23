@@ -15,11 +15,11 @@ function App() {
             <SignIn />
           </Route>
 
-          <Route path="/signup">
-            <SignUp />
+          <Route path="/">
+            <h1>hello world</h1>
           </Route>
 
-          <Route path="/">
+          <Route path="/signup">
             <SignUp />
           </Route>
 
