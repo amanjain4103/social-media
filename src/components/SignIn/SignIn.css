@@ -1,0 +1,22 @@
+.signin__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+
+.signin__form {
+    border: 1px solid gray;
+    padding: 20px 25px;
+    min-width: 300px;
+    border-radius: 5px;
+}
+
+.signin__formFields {
+    margin: 15px 0px;
+}
+
+.signin__logo {
+    text-align: center;
+    margin-bottom: 60px;
+}
