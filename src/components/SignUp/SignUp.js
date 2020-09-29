@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import TextField from '@material-ui/core/TextField';
-import {SignUpButton} from "../Buttons/Buttons";
+import {MyBasicButton} from "../Buttons/Buttons";
 import "./SignUp.css";
 import MuiPhoneNumber from "material-ui-phone-number";
 import {validateEmail, validatePassword} from "../../validator"
@@ -159,7 +159,7 @@ const SignUp = () => {
                                     required
                                 />
                                 <div className="signup__formFields">
-                                    <SignUpButton
+                                    <MyBasicButton
                                         type="submit" 
                                         variant="contained" 
                                         color="secondary" 
@@ -167,7 +167,7 @@ const SignUp = () => {
                                         onClick={(e) => handleOtpVerification(e)}
                                     >
                                         Verify OTP
-                                    </SignUpButton>
+                                    </MyBasicButton>
                                 </div>
                             </div>
                         )
@@ -243,7 +243,7 @@ const SignUp = () => {
                                 </div>
         
                                 <div className="signup__formFields">
-                                    <SignUpButton
+                                    <MyBasicButton
                                         type="submit" 
                                         variant="contained" 
                                         color="secondary" 
@@ -251,7 +251,7 @@ const SignUp = () => {
                                         onClick={(e) => handleSignup(e)}
                                     >
                                         signup
-                                    </SignUpButton>
+                                    </MyBasicButton>
                                 </div>
                                 
                                 <hr />

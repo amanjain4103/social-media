@@ -1,6 +1,6 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import {SignInButton} from "../Buttons/Buttons";
+import {MyBasicButton} from "../Buttons/Buttons";
 import "./SignIn.css";
 
   
@@ -39,7 +39,7 @@ const SignIn = () => {
                         </div>
 
                         <div className="signin__formFields">
-                            <SignInButton variant="contained" color="secondary" fullWidth>signin</SignInButton>
+                            <MyBasicButton variant="contained" color="secondary" fullWidth>signin</MyBasicButton>
                         </div>
                         
                         <br />
