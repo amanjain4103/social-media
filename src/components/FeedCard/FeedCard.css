@@ -1,0 +1,61 @@
+.feedCard {
+    background-color: white;
+    max-width: 400px;
+    margin-bottom: 15px;
+}
+
+.feedCard__top {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid lightgray;
+}
+
+.MuiAvatar-root {
+    height: 40px !important;
+    width: 40px !important;
+}
+
+.feedCard__username {
+    font-size: 20px;
+    font-weight: 400;
+    text-transform: lowercase;
+    position: relative;
+    top: 4px;
+}
+
+.feedCard__post {
+    width: 100%;
+    padding: 10px 0px;
+}
+
+.feedCard__post > img {
+    width: 100%;
+    object-fit: contain;
+}
+
+.feedCard__likeComment {
+    padding: 10px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.feedCard__likeCaption {
+    padding: 5px 10px;
+}
+
+.feedCard__likeCaption > span {
+    font-weight: bold;
+}
+
+.feedCard__addComment {
+    padding: 10px;
+    border-top:1px solid lightgray;
+    display: flex;
+    justify-content: space-between;
+}
+
+.feedCard__addComment > input {
+    flex: 1;
+    border: none;
+    font-size: 15px;
+}

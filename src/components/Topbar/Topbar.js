@@ -1,6 +1,6 @@
 import React from 'react';
 import "./Topbar.css";
-import { Button, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import {MySimpleButton} from "../Buttons/Buttons";
 

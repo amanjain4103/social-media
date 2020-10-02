@@ -1,0 +1,15 @@
+.feedslist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y:auto;
+    max-height: 80vh;
+}
+
+/* hiding uglyscrollbar */
+.feedslist::-webkit-scrollbar {
+    display: none; /* chrome, safari, opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+

@@ -8,7 +8,7 @@ import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import WidgetsIcon from '@material-ui/icons/Widgets';
-import DeveloperModeIcon from '@material-ui/icons/DeveloperMode';
+import PublishIcon from '@material-ui/icons/Publish';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import "./Sidebar.css";
 
@@ -88,7 +88,6 @@ function Sidebar() {
                         </SidebarButton>
 
                         <SidebarButton
-                            // variant="outlined" 
                             color="secondary" 
                             fullWidth
                             onClick={handleProfile}
@@ -98,7 +97,6 @@ function Sidebar() {
                         </SidebarButton>
 
                         <SidebarButton
-                            // variant="outlined" 
                             color="secondary" 
                             fullWidth
                             onClick={handleProfile}
@@ -146,9 +144,9 @@ function Sidebar() {
                             color="primary" 
                             fullWidth
                             onClick={handleProfile}
-                            startIcon={<DeveloperModeIcon />}
+                            startIcon={<PublishIcon />}
                         >
-                            Developer
+                            Upload
                         </SidebarButton>
                     </div>
                 </div>
