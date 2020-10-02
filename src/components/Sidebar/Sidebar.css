@@ -1,3 +1,8 @@
+.sidebar {
+    width: 20vw;
+    min-width: 300px;
+}
+
 .sidebar__container {
     width: 20vw;
     min-width: 300px;
@@ -61,10 +66,16 @@
 
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 500px) {
 
     .sidebar__ImgSection {
         padding: 10px 0px 10px 0px;
     }
+
+    .sidebar {
+        width: 100%;    
+    }
+
+    
 
 }

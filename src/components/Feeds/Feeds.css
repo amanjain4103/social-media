@@ -1,0 +1,40 @@
+.feeds {
+    display: flex;
+}
+
+
+.feeds__sidebar {
+    width: fit-content;
+}
+
+.feeds__rightContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.feeds__right__bottombar {
+    display: flex;
+    padding: 15px;
+
+}
+
+.feeds__allfeeds {
+    flex: 2;
+}
+
+.feeds__explore {
+    flex: 1;
+}
+
+@media only screen and (max-width: 500px) {
+
+    .feeds {
+        flex-direction: column;
+    }
+    
+    .feeds__right__bottombar {
+        flex-direction: column;
+    }
+
+}

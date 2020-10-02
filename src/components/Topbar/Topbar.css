@@ -1,0 +1,33 @@
+.topbar {
+    background-color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0px 5px 3px 1px lightgray;
+    align-items: center;
+}
+
+
+.topbar__search {
+    display: flex;
+    
+}
+
+.topbar__logo > img {
+    height: 40px;
+    width: 150px;
+}
+
+@media only screen and (max-width: 500px) {
+
+    .topbar__logo {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+
+    .topbar__logo {
+        display: none;
+    }
+}

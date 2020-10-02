@@ -6,6 +6,10 @@ export const MyBasicButton = styled(Button)({
   fontSize: "20px"
 });
 
+export const MySimpleButton = styled(Button)({
+  padding: "0px 20px"
+});
+
 
 export const SidebarButton = styled(Button)({
   padding: "10px 0px",
