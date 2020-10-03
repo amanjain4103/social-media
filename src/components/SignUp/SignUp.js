@@ -5,6 +5,13 @@ import "./SignUp.css";
 import MuiPhoneNumber from "material-ui-phone-number";
 import {validateEmail, validatePassword} from "../../validator"
 import {useHistory} from "react-router-dom";
+import { useStateValue } from "../../StateProvider";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import MyAlert from '../MyAlert/MyAlert';
+
+
+// already exposed by react
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 
 const SignUp = () => {
@@ -20,7 +27,11 @@ const SignUp = () => {
     const [user, setUser] = useState(null);
     const [errorOnSignup, setErrorOnSignup] = useState([]);
     const [otp, setOtp] = useState("");
+    const [isSignupLoading, setIsSignupLoading] = useState(false)
+    const [showAlert, setShowAlert] = useState(false);
 
+    const [state, dispatch] = useStateValue();
+    
     const handlePhoneNumber = (value) => {
         //phone number is a string
         var num ="+" +  value.split("").map(num => {
@@ -77,6 +88,7 @@ const SignUp = () => {
     const handleSignup = (e) => {
         e.preventDefault();
 
+        
         let errors = [];
 
         if( firstName.trim() ==="") {
@@ -99,20 +111,51 @@ const SignUp = () => {
 
         if(errors.length <= 0) {
 
-            setUser({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                password: password
+            
+            setIsSignupLoading(true);
+            
+            // console.log({
+            //     firstName: firstName,
+            //     lastName: lastName,
+            //     email: email,
+            //     password: password
+            // })
+
+
+            //send mobile number for otp verification
+            fetch(`${BASE_URL}/otp/send`, {
+                method:"POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    "phonenumber":phoneNumber,
+                    "channel":"sms"
+                })
+            })
+            .then((res => res.json()))
+            .then((response => {
+                console.log(response)
+                
+                //this will set user due to which otp verification components comes up
+                setUser({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    password: password
+                })
+                
+                setIsSignupLoading(false);
+                
+            
+            }))
+            .catch((error) => {
+                console.log(error)
+                setIsSignupLoading(false);
             })
             
-            console.log({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                password: password
-            })
-            
+
+
       
         }
 
@@ -125,12 +168,35 @@ const SignUp = () => {
 
     // handling otp verification 
     const handleOtpVerification = (e) => {
+
         e.preventDefault();
-        console.log("auth with server")
+        // console.log("auth with server")
+
+        setShowAlert(true);
+        setTimeout(() => { setShowAlert(false) },6000)
+
+        fetch(`${BASE_URL}/otp/verify`, {
+            method:"POST",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                "phonenumber":phoneNumber,
+                "code":otp
+            })
+        })
+        .then((res => res.json()))
+        .then((response => {
+            console.log(response)
+            // history.push("/signin");
+        }))
+        .catch((error) => {
+            console.log(error)
+        })
 
         if(true) {
             console.log("verified with server");
-            history.push("/signin");
+            
         }
     }
 
@@ -166,9 +232,17 @@ const SignUp = () => {
                                         fullWidth
                                         onClick={(e) => handleOtpVerification(e)}
                                     >
-                                        Verify OTP
+                                        Verify {"&"} signup
                                     </MyBasicButton>
                                 </div>
+                                {
+                                    showAlert
+                                    ?
+                                    (<MyAlert message={"hello world"} error={true} />)
+                                    :
+                                    ("")
+                                }
+                                
                             </div>
                         )
                         :
@@ -241,23 +315,43 @@ const SignUp = () => {
                                         ("")
                                     }
                                 </div>
-        
-                                <div className="signup__formFields">
-                                    <MyBasicButton
-                                        type="submit" 
-                                        variant="contained" 
-                                        color="secondary" 
-                                        fullWidth
-                                        onClick={(e) => handleSignup(e)}
-                                    >
-                                        signup
-                                    </MyBasicButton>
-                                </div>
+                                    
+                                {
+                                    isSignupLoading
+                                    ?
+                                    (
+                                        <div className="signup__formFields">
+                                            <MyBasicButton
+                                                variant="outlined" 
+                                                color="secondary" 
+                                                fullWidth
+                                            >
+                                                <CircularProgress color="secondary" />
+                                            </MyBasicButton>
+                                        </div>
+                                                
+                                    )
+                                    :
+                                    (
+                                        <div className="signup__formFields">
+                                            <MyBasicButton
+                                                type="submit" 
+                                                variant="contained" 
+                                                color="secondary" 
+                                                fullWidth
+                                                onClick={(e) => handleSignup(e)}
+                                            >
+                                                send otp
+                                            </MyBasicButton>
+                                        </div>
+                                        
+                                    )
+                                }
                                 
                                 <hr />
         
                                 <div className="signup_formFields">
-                                    Instead have an account  ! &nbsp; <a href="#">Sign In</a> 
+                                    Already have an account  ! &nbsp; <a href="#">Sign In</a> 
                                 </div>
         
                                 
