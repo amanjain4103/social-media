@@ -1,0 +1,27 @@
+.withsidebarlayout {
+    display: flex;
+    max-width: 2000px;
+    margin: auto;
+}
+
+.withsidebarlayout__rightContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+@media only screen and (max-width: 500px) {
+
+    .withsidebarlayout {
+        flex-direction: column;
+    }
+    
+    .withsidebarlayout__right__bottombar {
+        flex-direction: column;
+        height: 72vh;
+        overflow: hidden;
+    }
+
+}
+

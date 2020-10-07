@@ -18,7 +18,7 @@ function Topbar() {
             <form className="topbar__search">
                 <TextField
                     variant="outlined"
-                    label="Search"
+                    label="Search hashtags"
                     type="text"
                     size="small"
                     onChange={(e) => handleSearchField(e)}
@@ -38,10 +38,11 @@ function Topbar() {
             </form>
 
             <div className="topbar__logo">
-                <img 
-                    alt="logo"
-                    src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
-                />
+                Social Media
+                {/* <img 
+                    alt="Social Media"
+                    // src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
+                /> */}
             </div>
         
         </div>

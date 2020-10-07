@@ -11,12 +11,14 @@ import WidgetsIcon from '@material-ui/icons/Widgets';
 import PublishIcon from '@material-ui/icons/Publish';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import "./Sidebar.css";
+import { useStateValue } from '../../StateProvider';
 
 
 function Sidebar() {
 
     const [screenSize, setScreenSize] = useState(window.innerWidth);
     const [isSidebarToggled, setIsSidebarToggled] = useState(false);
+    const [{user},dispatch] = useStateValue();
 
     const handleProfile = () => {
 
@@ -65,11 +67,12 @@ function Sidebar() {
                 }
 
                 
-
                 <div className="sidebar__ImgSection">
                     <img 
                     alt="profile"
-                    src="https://instagram.fjai1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/95205316_245179196540438_1810417303259447296_n.jpg?_nc_ht=instagram.fjai1-1.fna.fbcdn.net&_nc_ohc=0-MdrDqZwI4AX_arLlU&oh=07bce87acc9055af5b2b7c667cc413b4&oe=5F9AB562"
+                    src={user.avatarSrc}
+                    // src="https://static.thenounproject.com/png/363640-200.png"
+                    // src="https://instagram.fjai1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/95205316_245179196540438_1810417303259447296_n.jpg?_nc_ht=instagram.fjai1-1.fna.fbcdn.net&_nc_ohc=0-MdrDqZwI4AX_arLlU&oh=07bce87acc9055af5b2b7c667cc413b4&oe=5F9AB562"
                     className="sidebar__img"
                     />
                 </div>

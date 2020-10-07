@@ -7,7 +7,7 @@ import {validateEmail, validatePassword} from "../../validator"
 import {useHistory} from "react-router-dom";
 import { useStateValue } from "../../StateProvider";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import MyAlert from '../MyAlert/MyAlert';
+// import MyAlert from '../MyAlert/MyAlert';
 
 
 // already exposed by react
@@ -28,7 +28,7 @@ const SignUp = () => {
     const [errorOnSignup, setErrorOnSignup] = useState([]);
     const [otp, setOtp] = useState("");
     const [isSignupLoading, setIsSignupLoading] = useState(false)
-    const [showAlert, setShowAlert] = useState(false);
+    // const [showAlert, setShowAlert] = useState(false);
 
     const [state, dispatch] = useStateValue();
     
@@ -134,25 +134,31 @@ const SignUp = () => {
                 })
             })
             .then((res => res.json()))
-            .then((response => {
-                console.log(response)
+            .then((res => {
+                console.log(res.message)
                 
-                //this will set user due to which otp verification components comes up
-                setUser({
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    password: password
-                })
-                
+                if(res.message=== "otpSent") {
+                    // otp sent successfully
+
+                    //this will set user due to which otp verification components comes up
+                    setUser({
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email
+                    })
+
+                }else {
+                    // may be some error occured
+                    alert(res.message);
+                }
+
                 setIsSignupLoading(false);
-                
             
             }))
-            .catch((error) => {
-                console.log(error)
-                setIsSignupLoading(false);
-            })
+            // .catch((error) => {
+            //     console.log("error"+error)
+            //     setIsSignupLoading(false);
+            // })
             
 
 
@@ -172,8 +178,8 @@ const SignUp = () => {
         e.preventDefault();
         // console.log("auth with server")
 
-        setShowAlert(true);
-        setTimeout(() => { setShowAlert(false) },6000)
+        // setShowAlert(true);
+        // setTimeout(() => { setShowAlert(false) },6000)
 
         fetch(`${BASE_URL}/otp/verify`, {
             method:"POST",
@@ -186,9 +192,21 @@ const SignUp = () => {
             })
         })
         .then((res => res.json()))
-        .then((response => {
-            console.log(response)
-            // history.push("/signin");
+        .then((res => {
+
+            console.log(res.message)
+
+
+            if(res.message ==="successfulSignup") {
+                // hence the user is created and now I can signin with those credentials
+                history.push("/signin");
+            }else {
+                // there is some problem occured while signup or otp verification
+                alert(res.message);
+                setUser(null);
+            }
+
+            
         }))
         .catch((error) => {
             console.log(error)
@@ -235,13 +253,14 @@ const SignUp = () => {
                                         Verify {"&"} signup
                                     </MyBasicButton>
                                 </div>
-                                {
+
+                                {/* {
                                     showAlert
                                     ?
                                     (<MyAlert message={"hello world"} error={true} />)
                                     :
                                     ("")
-                                }
+                                } */}
                                 
                             </div>
                         )
@@ -304,16 +323,22 @@ const SignUp = () => {
                                     {
                                         errorOnSignup.length > 0
                                         ?
-                                        (<div className="signup__formFields">
-                                            {
-                                                errorOnSignup.map( (item,index) => {
-                                                    return <span style={{"color":"coral"}} key={index}>* {item}<br /></span>
-                                                })
-                                            }
-                                        </div>)
+                                        (
+                                            <div className="signup__formFields">
+                                                {
+                                                    errorOnSignup.map( (item,index) => {
+                                                        return <span style={{"color":"coral"}} key={index}>* {item}<br /></span>
+                                                    })
+                                                }
+                                            </div>
+                                        )
                                         :
                                         ("")
                                     }
+                                </div>
+
+                                <div className="signup__formFields">
+                                    <span style={{"color":"green","fontWeight":"600"}}>* Phone numbers are not stored</span> 
                                 </div>
                                     
                                 {
@@ -351,7 +376,7 @@ const SignUp = () => {
                                 <hr />
         
                                 <div className="signup_formFields">
-                                    Already have an account  ! &nbsp; <a href="#">Sign In</a> 
+                                    Already have an account  ! &nbsp; <a href="#" onClick={()=>history.push("/signin")}>Sign In</a> 
                                 </div>
         
                                 

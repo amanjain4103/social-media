@@ -5,8 +5,13 @@ import SignIn from "./components/SignIn/SignIn";
 import SignUp from "./components/SignUp/SignUp";
 // import Home from "./components/Home/Home";
 import Feeds from "./components/Feeds/Feeds";
+import { useStateValue } from './StateProvider';
+import Profile from './components/Profile/Profile';
 
 function App() {
+
+  const [{user},dispatch] = useStateValue();
+
   return (
     <Router>
       <div className="App">
@@ -20,12 +25,24 @@ function App() {
             <SignUp />
           </Route>
 
-          <Route path="/feeds">
-            <Feeds />
-            
+          {
+            user.firstName
+            ?
+            (
+              <Route path="/feeds">
+                <Feeds />
+              </Route>
+            )
+            :
+            ("")
+          }
+          
+          <Route path="/profile">
+            <Profile />
           </Route>
+          
 
-          <Route path='/:username' render={(props) => {
+          {/* <Route path='/:username' render={(props) => {
             return ( 
               <div> 
                 {` Hello ${props.match.params.username}`}
@@ -38,7 +55,7 @@ function App() {
                 }
               </div> 
             )
-          }} />
+          }} /> */}
 
           <Route path="/">
             <h1>hello world</h1>
