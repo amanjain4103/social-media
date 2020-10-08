@@ -1,0 +1,35 @@
+.profile {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.profile__top {
+    display: flex;
+    flex-wrap: wrap;    
+    padding: 10px;
+    border-bottom: 1px solid lightgray;
+}
+
+.profile__top__left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+
+.profile__top__right {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.profile__top__right__section {
+    display: flex;
+    margin-bottom: 10px;
+}

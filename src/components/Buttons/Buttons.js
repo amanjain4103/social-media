@@ -3,7 +3,8 @@ import { styled } from '@material-ui/core/styles';
 
 export const MyBasicButton = styled(Button)({
   padding: "10px 20px",
-  fontSize: "20px"
+  fontSize: "20px",
+  borderRadius: "0px"
 });
 
 export const MySimpleButton = styled(Button)({
