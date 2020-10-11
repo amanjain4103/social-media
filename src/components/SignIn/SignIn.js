@@ -71,7 +71,9 @@ const SignIn = () => {
                         firstName:res.firstName,
                         lastName: res.lastName,
                         email: res.email,
-                        avatarSrc: res.avatarSrc
+                        avatarSrc: res.avatarSrc,
+                        numberOfPosts: res.numberOfPosts,
+                        numberOfLikes: res.numberOfLikes
                     }
                 })
                 // waiting for state to be set so that feeds route will be available

@@ -4,7 +4,7 @@ export const initialState = {
     email: "",
     authToken: "",
     sayHello:"hello world",
-    user:{}
+    user:{},
 }
 
 export const reducer = (state, action) => {
@@ -18,9 +18,12 @@ export const reducer = (state, action) => {
                     firstName: action.payload.firstName,
                     lastName: action.payload.lastName,
                     email: action.payload.email,
-                    avatarSrc: action.payload.avatarSrc
+                    avatarSrc: action.payload.avatarSrc,
+                    numberOfPosts: action.payload.numberOfPosts,
+                    numberOfLikes: action.payload.numberOfLikes
                 }
             }
+        
         
         default: 
             return state;

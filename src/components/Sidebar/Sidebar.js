@@ -12,10 +12,11 @@ import PublishIcon from '@material-ui/icons/Publish';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import "./Sidebar.css";
 import { useStateValue } from '../../StateProvider';
-
+import {useHistory} from "react-router-dom";
 
 function Sidebar() {
 
+    const history =  useHistory();
     const [screenSize, setScreenSize] = useState(window.innerWidth);
     const [isSidebarToggled, setIsSidebarToggled] = useState(false);
     const [{user},dispatch] = useStateValue();
@@ -84,7 +85,7 @@ function Sidebar() {
                             // variant="outlined"
                             color="secondary" 
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={() => { history.push("/profile") } }
                             startIcon={<AccountBoxIcon />}
                         >
                             Profile

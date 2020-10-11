@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect,useState} from "react";
 import "./Profile.css";
 import WithSidebarLayout from "../../Layouts/WithSidebarLayout/WithSidebarLayout";
 import { Button } from "@material-ui/core";
@@ -11,9 +11,43 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-const Profile = () => {
+
+// already exposed by react
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+const Profile = (props) => {
 
     const classes = useStyles();
+    const [currentUser, setCurrentUser] = useState(null);
+    const [postsForRenderingOnProile, setPostsForRenderingOnProile] = useState([]);
+
+    useEffect(() => {
+        fetch(`${BASE_URL}/users/getuser/?email=${props.email}`)
+        .then((res)=> res.json())
+        .then((res)=> {
+
+            if(res.message ==="userDataFound") {
+                setCurrentUser({
+                    "firstName": res.firstName,
+                    "lastName": res.lastName,
+                    "username": res.email,
+                    "avatarSrc": res.avatarSrc,
+                    "numberOfPosts": res.numberOfPosts,
+                    "numberOfLikes": res.numberOfLikes
+                })
+            }else {
+                alert(res.message);
+            }
+
+            setPostsForRenderingOnProile(res.posts.map(item => item.postSrc));
+
+            console.log(res);
+            console.log(postsForRenderingOnProile);
+        })
+        .catch( (err) => {
+            alert(err)
+        })
+    },[])
 
     return ( 
         <WithSidebarLayout>
@@ -23,11 +57,11 @@ const Profile = () => {
                     <div className="profile__top__left">
                         <img 
                             alt="profile"
-                            src="https://instagram.fjdh1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/95205316_245179196540438_1810417303259447296_n.jpg?_nc_ht=instagram.fjdh1-1.fna.fbcdn.net&_nc_ohc=HBXNFvtAPKYAX8gyFWn&oh=1e572e8194718147d9f85c3d29ae7bef&oe=5FA692E2"
+                            src={currentUser?.avatarSrc}
                         />
 
                         {/* file upload system */}
-                        <form action="fileupload" method="post" enctype="multipart/form-data">
+                        <form action="fileupload" method="post" encType="multipart/form-data">
                             <p>Upload New Profile Pic</p>
                             <input
                                 accept="image/*"
@@ -37,7 +71,7 @@ const Profile = () => {
                                 type="file"
                             />
                             <label htmlFor="contained-button-file">
-                                <Button type="submit" variant="contained" color="primary" component="span">
+                                <Button type="submit" variant="contained" color="primary" fullWidth>
                                     Upload
                                 </Button>
                             </label>
@@ -47,7 +81,7 @@ const Profile = () => {
 
                     <div className="profile__top__right">
                         <div className="profile__top__right__section">
-                            <h2>akku@gmail.com </h2>
+                            <h2>{currentUser?.username}</h2>
                             <Button
                             //   variant="outlined"
                               color="secondary"
@@ -57,13 +91,13 @@ const Profile = () => {
                         </div>
 
                         <div className="profile__top__right__section">
-                            <p>11 <strong>posts</strong></p>
-                            <p>777 <strong>Likes</strong></p>
+                            <p>{currentUser?.numberOfPosts} <strong>posts</strong></p>
+                            <p>{currentUser?.numberOfLikes} <strong>Likes</strong></p>
 
                         </div>
 
                         <div className="profile__top__right__section">
-                            <h3>Akanksha Pandey</h3>
+                            <h3>{currentUser?.firstName + " " + currentUser?.lastName}</h3>
                         </div>
 
                     </div>
@@ -71,7 +105,7 @@ const Profile = () => {
 
                 <div className="profile__bottom">
                     <h2>Posts</h2>
-                    <MyPostList />
+                    <MyPostList postsToBeShown={postsForRenderingOnProile} />
                 </div>
             </div>
         </WithSidebarLayout>

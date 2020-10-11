@@ -3,15 +3,16 @@
     flex-direction: column;
     /* justify-content: center; */
     align-items: center;
-    flex-wrap: wrap;
     padding: 10px;
+    overflow-y:auto;
+    max-height: 95vh;
 }
 
 .profile__top {
     display: flex;
     flex-wrap: wrap;    
+    justify-content: space-around;
     padding: 10px;
-    border-bottom: 1px solid lightgray;
 }
 
 .profile__top__left {
@@ -22,6 +23,14 @@
     padding: 20px;
 }
 
+.profile__top__left > form {
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px dashed gray;
+}
 
 .profile__top__right {
     display: flex;
@@ -32,4 +41,40 @@
 .profile__top__right__section {
     display: flex;
     margin-bottom: 10px;
+}
+
+.profile__top__right__section > p {
+    margin-right: auto;
+}
+
+.profile__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid gray;
+}
+
+.profile__bottom > h2 {
+    margin: 10px 0px;
+}
+
+
+@media only screen and (max-width: 500px) {
+
+    .profile {
+        max-height: 80vh;
+    }
+
+    .profile__top {
+        padding: 0px;
+    }
+    
+
+}
+
+/* hiding uglyscrollbar */
+.feedslist::-webkit-scrollbar {
+    display: none; /* chrome, safari, opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }

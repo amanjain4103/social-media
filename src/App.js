@@ -8,9 +8,22 @@ import Feeds from "./components/Feeds/Feeds";
 import { useStateValue } from './StateProvider';
 import Profile from './components/Profile/Profile';
 
-function App() {
+const App = () => {
 
-  const [{user},dispatch] = useStateValue();
+  const [{user,authToken},dispatch] = useStateValue();
+
+  // fetch user data from server
+  // useEffect(() => {
+  //   fetch(`${BASE_URL}/secured/getuser`, {
+  //     headers: {
+  //         "auth-token":{authToken}
+  //     }
+  // })
+  // .then((res => res.json()))
+  // .then((res => {
+  //     console.log(res)
+  // }))
+  // }, [user])
 
   return (
     <Router>
@@ -36,10 +49,18 @@ function App() {
             :
             ("")
           }
-          
-          <Route path="/profile">
-            <Profile />
-          </Route>
+
+          {
+            user.firstName
+            ?
+            (
+              <Route path="/profile">
+                <Profile email={user?.email}  />
+              </Route>
+            )
+            :
+            ("")
+          }
           
 
           {/* <Route path='/:username' render={(props) => {

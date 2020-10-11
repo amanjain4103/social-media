@@ -1,6 +1,5 @@
 import React from 'react'
 import "./Feeds.css";
-import Sidebar from "../Sidebar/Sidebar";
 import Topbar from '../Topbar/Topbar';
 import FeedsList from '../FeedsList/FeedsList';
 import ExploreTab from '../ExploreTab/ExploreTab';

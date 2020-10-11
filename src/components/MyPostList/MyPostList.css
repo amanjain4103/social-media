@@ -1,0 +1,26 @@
+.mypostlist {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    max-width: 100vw;
+    border-top: 1px solid gray;
+}
+
+.mypostlist__post {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    padding: 1px 0px;
+    margin: 10px 10px;
+    border: 1px solid lightgray;
+    background-color: white;
+}
+
+.mypostlist__post > img {
+    object-fit: contain;
+    width: 100%;
+}
+
