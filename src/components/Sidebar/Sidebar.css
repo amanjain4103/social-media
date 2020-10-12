@@ -69,6 +69,14 @@
 
 }
 
+.sidebar__upload {
+    min-width: 50%;
+}
+
+.sidebar__upload__formFields {
+    margin-bottom: 20px;
+}
+
 @media only screen and (max-width: 500px) {
 
     .sidebar__ImgSection {

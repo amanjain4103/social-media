@@ -4,6 +4,7 @@ import WithSidebarLayout from "../../Layouts/WithSidebarLayout/WithSidebarLayout
 import { Button } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import MyPostList from "../MyPostList/MyPostList";
+import { useStateValue } from "../../StateProvider";
 
 const useStyles = makeStyles((theme) => ({
     input: {
@@ -20,8 +21,15 @@ const Profile = (props) => {
     const classes = useStyles();
     const [currentUser, setCurrentUser] = useState(null);
     const [postsForRenderingOnProile, setPostsForRenderingOnProile] = useState([]);
+    const [{user}, dispatch] = useStateValue();
 
     useEffect(() => {
+
+        let emailToBeViewed = props.email;
+        if(!props.email) {
+            emailToBeViewed = user.email;
+        }
+
         fetch(`${BASE_URL}/users/getuser/?email=${props.email}`)
         .then((res)=> res.json())
         .then((res)=> {

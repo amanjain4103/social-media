@@ -7,6 +7,8 @@ import SignUp from "./components/SignUp/SignUp";
 import Feeds from "./components/Feeds/Feeds";
 import { useStateValue } from './StateProvider';
 import Profile from './components/Profile/Profile';
+import FullScreenOverlayLayout from './Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
+import Upload from './components/Upload/Upload';
 
 const App = () => {
 
@@ -38,29 +40,13 @@ const App = () => {
             <SignUp />
           </Route>
 
-          {
-            user.firstName
-            ?
-            (
-              <Route path="/feeds">
-                <Feeds />
-              </Route>
-            )
-            :
-            ("")
-          }
-
-          {
-            user.firstName
-            ?
-            (
-              <Route path="/profile">
-                <Profile email={user?.email}  />
-              </Route>
-            )
-            :
-            ("")
-          }
+          <Route path="/feeds">
+             <Feeds />
+          </Route>
+       
+          <Route path="/profile">
+            <Profile email={user?.email}  />
+          </Route>
           
 
           {/* <Route path='/:username' render={(props) => {
@@ -79,7 +65,7 @@ const App = () => {
           }} /> */}
 
           <Route path="/">
-            <h1>hello world</h1>
+            <Upload />
           </Route>
 
         </Switch>

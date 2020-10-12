@@ -90,6 +90,8 @@ const SignIn = () => {
 
     }
 
+
+
     return (
         <div className="signin">
             <div className="signin__container">
@@ -99,8 +101,9 @@ const SignIn = () => {
                     <div className="signin__logo">
                         <h1>Social Media</h1>
                     </div>
+                    
 
-                    <form noValidate autoComplete="off">
+                    <form noValidate="false" autoComplete="off">
                         <div className="signin__formFields">
                             <TextField
                                 value={email}

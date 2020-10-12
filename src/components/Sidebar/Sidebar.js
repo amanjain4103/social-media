@@ -1,6 +1,6 @@
 import React, {useEffect,useState} from 'react';
-import { SidebarButton } from '../Buttons/Buttons';
-import {Button} from "@material-ui/core";
+import { SidebarButton,MyBasicButton } from '../Buttons/Buttons';
+import {Button, LinearProgress, TextField} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import ForumIcon from '@material-ui/icons/Forum';
 import VideoCallIcon from '@material-ui/icons/VideoCall';
@@ -13,14 +13,22 @@ import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import "./Sidebar.css";
 import { useStateValue } from '../../StateProvider';
 import {useHistory} from "react-router-dom";
+import FullScreenOverlayLayout from '../../Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
+import storage from "../../firebase.js"
 
 function Sidebar() {
 
     const history =  useHistory();
     const [screenSize, setScreenSize] = useState(window.innerWidth);
     const [isSidebarToggled, setIsSidebarToggled] = useState(false);
-    const [{user},dispatch] = useStateValue();
-
+    const [{user,authToken},dispatch] = useStateValue();
+    const [ isUploadCompVisible, setIsUploadCompVisible] = useState(false);
+    const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
+    const [imagePreviewSrc, setImagePreviewSrc] = useState(null);
+    const [imageToBeUploaded,setImageToBeUploaded] = useState(null);
+    const [progress, setProgress] = useState(0);
+    const [caption, setCaption] = useState(null);
+    
     const handleProfile = () => {
 
     }
@@ -145,9 +153,9 @@ function Sidebar() {
                         <SidebarButton
                             disableElevation
                             variant="contained"
-                            color="primary" 
+                            color="primary"
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={() => {setIsUploadCompVisible(true)}}
                             startIcon={<PublishIcon />}
                         >
                             Upload
@@ -155,10 +163,89 @@ function Sidebar() {
                     </div>
                 </div>
 
-                {/* developer btn */}
             </div>
         )
     }
+
+    // for uploading functionality
+    const handleCloseUploadComp = () => {
+        setIsUploadCompVisible(false);
+        setImagePreviewSrc(null);
+    }
+
+    const handleFileChange = (e) => {
+        if(e.target.files[0]) {
+            // setting for previewing images
+            let newSrc = URL.createObjectURL(e.target.files[0])
+            setImagePreviewSrc(newSrc);
+
+            // setting for uploading image object
+            setImageToBeUploaded(e.target.files[0]);
+
+            
+        }
+    }
+
+    const handleFeedUpload = (e) => {
+        e.preventDefault();
+
+        // uploading image
+        const uploadTask = storage.ref(`images/${imageToBeUploaded.name}`).put(imageToBeUploaded);
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                // progress function ...
+                const progress = Math.round( (snapshot.bytesTransferred / snapshot.totalBytes)* 100);
+                setProgress(progress);
+            },
+            (error) => {
+                // error function ...
+                console.log(error);
+                alert(error.message);
+            },
+            () => {
+                // on upload completion ...
+                storage
+                    .ref("images")
+                    .child(imageToBeUploaded.name)
+                    .getDownloadURL()
+                    .then(url => {
+                        // now you can save image url inside database
+                        console.log(url);
+
+                        fetch(`${BASE_URL}/secured/upload`, {
+                            method: "POST",
+                            heders: {
+                                "Content-Type":"application/json",
+                                "auth-token": authToken
+                            },
+                            body: JSON.stringify({
+                                
+                            })
+                        })
+
+                        // resetting back to default
+                        setProgress(0);
+                        setImagePreviewSrc(null);
+                        setImageToBeUploaded(null);
+                        setCaption("");
+                    })
+            }
+        )
+
+        // fetch(`${BASE_URL}/secured/upload`,{
+        //     method:"POST",
+        //     headers: {
+        //         "Content-Type":"application/json"
+        //     },
+        //     enctype: "multipart/form-data",
+            
+        // })
+
+        console.log("hello")
+    }
+
 
     return (
         <div className="sidebar">
@@ -206,6 +293,67 @@ function Sidebar() {
                 ("")
             }
 
+            {
+                isUploadCompVisible
+                ?
+                (
+                    // upload system using full screen overlay layout
+
+                    <FullScreenOverlayLayout handleCloseFunc={handleCloseUploadComp}>
+                        <form className="sidebar__upload"  onSubmit={(e) => handleFeedUpload(e)}>
+
+                            <div className="sidebar__upload__formFields">
+                                <LinearProgress color="primary" thickness={1} variant="determinate" value={progress} max="100" />
+                            </div>
+
+                            <div className="sidebar__upload__formFields">
+                                <TextField
+                                    value={caption}
+                                    label="Caption"
+                                    type="text"
+                                    onChange={(e) => { setCaption(e.target.value) }}
+                                    fullWidth
+                                />
+                            </div>
+
+                            {
+                                imagePreviewSrc
+                                ?
+                                (
+                                    <div className="sidebar__upload__formFields">
+                                        <img 
+                                            alt="post to be uploaded"
+                                            src={imagePreviewSrc}
+                                            width="200"
+                                            height="200"
+                                        />
+                                    </div>
+                                )
+                                :
+                                (
+                                    <div className="sidebar__upload__formFields">
+                                        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e)} />
+                                    </div> 
+                                )
+                            }
+
+                            <div className="sidebar__upload__formFields">
+                                <MyBasicButton
+                                    variant="contained"
+                                    color="secondary"
+                                    fullWidth
+                                    onClick={(e) => handleFeedUpload(e)}
+                                >
+                                    Upload Post
+                                </MyBasicButton>
+                            </div>
+                        </form>
+                    </FullScreenOverlayLayout>
+                    
+                )
+                :
+                ("")
+            }
             
         
         </div>
