@@ -7,12 +7,11 @@ import SignUp from "./components/SignUp/SignUp";
 import Feeds from "./components/Feeds/Feeds";
 import { useStateValue } from './StateProvider';
 import Profile from './components/Profile/Profile';
-import FullScreenOverlayLayout from './Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
 import Upload from './components/Upload/Upload';
 
 const App = () => {
 
-  const [{user,authToken},dispatch] = useStateValue();
+  const [{user},] = useStateValue();
 
   // fetch user data from server
   // useEffect(() => {

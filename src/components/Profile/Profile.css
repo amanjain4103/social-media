@@ -23,7 +23,11 @@
     padding: 20px;
 }
 
-.profile__top__left > form {
+.profile__top__left > img {
+    max-width: 100px;
+}
+
+.profile__top__left__uploadButton {
     margin: 10px;
     padding: 10px;
     display: flex;

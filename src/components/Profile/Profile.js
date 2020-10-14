@@ -1,10 +1,15 @@
 import React, {useEffect,useState} from "react";
 import "./Profile.css";
+import {Button, LinearProgress, TextField} from "@material-ui/core";
+import { MyBasicButton } from '../Buttons/Buttons';
 import WithSidebarLayout from "../../Layouts/WithSidebarLayout/WithSidebarLayout";
-import { Button } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import MyPostList from "../MyPostList/MyPostList";
 import { useStateValue } from "../../StateProvider";
+import {useHistory} from "react-router-dom";
+import FullScreenOverlayLayout from '../../Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
+import storage from "../../firebase.js"
+
 
 const useStyles = makeStyles((theme) => ({
     input: {
@@ -18,10 +23,15 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const Profile = (props) => {
 
-    const classes = useStyles();
     const [currentUser, setCurrentUser] = useState(null);
     const [postsForRenderingOnProile, setPostsForRenderingOnProile] = useState([]);
-    const [{user}, dispatch] = useStateValue();
+    const [{user,authToken}, ] = useStateValue();
+
+    // for upload functionality
+    const [ isUploadCompVisible, setIsUploadCompVisible] = useState(false);
+    const [imagePreviewSrc, setImagePreviewSrc] = useState(null);
+    const [imageToBeUploaded,setImageToBeUploaded] = useState(null);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
 
@@ -30,7 +40,7 @@ const Profile = (props) => {
             emailToBeViewed = user.email;
         }
 
-        fetch(`${BASE_URL}/users/getuser/?email=${props.email}`)
+        fetch(`${BASE_URL}/users/getuser/?email=${emailToBeViewed}`)
         .then((res)=> res.json())
         .then((res)=> {
 
@@ -55,7 +65,83 @@ const Profile = (props) => {
         .catch( (err) => {
             alert(err)
         })
-    },[])
+    },[props.email,user.email])
+
+     // for uploading functionality
+     const handleCloseUploadComp = () => {
+        setIsUploadCompVisible(false);
+        setImagePreviewSrc(null);
+    }
+
+    const handleFileChange = (e) => {
+        if(e.target.files[0]) {
+            // setting for previewing images
+            let newSrc = URL.createObjectURL(e.target.files[0])
+            setImagePreviewSrc(newSrc);
+
+            // setting for uploading image object
+            setImageToBeUploaded(e.target.files[0]);
+
+            
+        }
+    }
+
+    const handleProfilePicUpload = (e) => {
+        e.preventDefault();
+
+        // uploading image
+        const uploadTask = storage.ref(`images/${imageToBeUploaded.name}`).put(imageToBeUploaded);
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                // progress function ...
+                const progress = Math.round( (snapshot.bytesTransferred / snapshot.totalBytes)* 100);
+                setProgress(progress);
+            },
+            (error) => {
+                // error function ...
+                console.log(error);
+                alert(error.message);
+            },
+            () => {
+                // on upload completion ...
+                storage
+                    .ref("images")
+                    .child(imageToBeUploaded.name)
+                    .getDownloadURL()
+                    .then(url => {
+                        // now you can save image url inside database
+                        console.log(url);
+                        
+                        console.log(authToken);
+
+                        fetch(`${BASE_URL}/secured/upload-profile-avatar`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":"application/json",
+                                "auth-token": authToken
+                            },
+                            body: JSON.stringify({
+                                "avatarSrc": url
+                            })
+                            
+
+                        })
+                        .then(res => res.json())
+                        .then(res => alert(res.message))
+                        .catch(err => alert(err))
+
+                        // resetting back to default
+                        setProgress(0);
+                        setImagePreviewSrc(null);
+                        setImageToBeUploaded(null);
+                    })
+            }
+        )
+
+    }
+
 
     return ( 
         <WithSidebarLayout>
@@ -69,21 +155,12 @@ const Profile = (props) => {
                         />
 
                         {/* file upload system */}
-                        <form action="fileupload" method="post" encType="multipart/form-data">
-                            <p>Upload New Profile Pic</p>
-                            <input
-                                accept="image/*"
-                                className={classes.input}
-                                id="contained-button-file"
-                                multiple
-                                type="file"
-                            />
-                            <label htmlFor="contained-button-file">
-                                <Button type="submit" variant="contained" color="primary" fullWidth>
-                                    Upload
-                                </Button>
-                            </label>
-                        </form>
+                        <div className="profile__top__left__uploadButton">
+                            <p>Upload new profile pic</p>
+                            <Button color="primary" variant="contained" fullWidth onClick={() => {setIsUploadCompVisible(true)}}>
+                                Upload
+                            </Button>
+                        </div>
 
                     </div>
 
@@ -115,6 +192,61 @@ const Profile = (props) => {
                     <h2>Posts</h2>
                     <MyPostList postsToBeShown={postsForRenderingOnProile} />
                 </div>
+
+                {   
+                    // upload popup component
+                    isUploadCompVisible
+                    ?
+                    (
+                        // upload system using full screen overlay layout
+
+                        <FullScreenOverlayLayout handleCloseFunc={handleCloseUploadComp}>
+                            <form className="sidebar__upload"  onSubmit={(e) => handleProfilePicUpload(e)}>
+
+                                <div className="sidebar__upload__formFields">
+                                    <LinearProgress color="primary" variant="determinate" value={progress} max="100" />
+                                </div>
+
+
+                                {
+                                    imagePreviewSrc
+                                    ?
+                                    (
+                                        <div className="sidebar__upload__formFields">
+                                            <img 
+                                                alt="post to be uploaded"
+                                                src={imagePreviewSrc}
+                                                width="200"
+                                                height="200"
+                                            />
+                                        </div>
+                                    )
+                                    :
+                                    (
+                                        <div className="sidebar__upload__formFields">
+                                            <input type="file" accept="image/*" onChange={(e) => handleFileChange(e)} />
+                                        </div> 
+                                    )
+                                }
+
+                                <div className="sidebar__upload__formFields">
+                                    <MyBasicButton
+                                        variant="contained"
+                                        color="secondary"
+                                        fullWidth
+                                        type="submit"
+                                    >
+                                        Upload Post
+                                    </MyBasicButton>
+                                </div>
+                            </form>
+                        </FullScreenOverlayLayout>
+                        
+                    )
+                    :
+                    ("")
+                }
+
             </div>
         </WithSidebarLayout>
     )

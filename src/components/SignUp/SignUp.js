@@ -5,7 +5,7 @@ import "./SignUp.css";
 import MuiPhoneNumber from "material-ui-phone-number";
 import {validateEmail, validatePassword} from "../../validator"
 import {useHistory} from "react-router-dom";
-import { useStateValue } from "../../StateProvider";
+// import { useStateValue } from "../../StateProvider";
 import CircularProgress from '@material-ui/core/CircularProgress';
 // import MyAlert from '../MyAlert/MyAlert';
 
@@ -30,7 +30,7 @@ const SignUp = () => {
     const [isSignupLoading, setIsSignupLoading] = useState(false)
     // const [showAlert, setShowAlert] = useState(false);
 
-    const [state, dispatch] = useStateValue();
+    // const [state, dispatch] = useStateValue();
     
     const handlePhoneNumber = (value) => {
         //phone number is a string

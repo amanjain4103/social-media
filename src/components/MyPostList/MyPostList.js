@@ -9,7 +9,7 @@ const MyPostList = (props) => {
             {
               props.postsToBeShown.map((item) => {
                 return (
-                  <div className="mypostlist__post">
+                  <div className="mypostlist__post" key={item}>
                     <img 
                       alt="my post"
                       src={item}

@@ -21,7 +21,8 @@ export const reducer = (state, action) => {
                     avatarSrc: action.payload.avatarSrc,
                     numberOfPosts: action.payload.numberOfPosts,
                     numberOfLikes: action.payload.numberOfLikes
-                }
+                },
+                authToken: action.payload.authToken
             }
         
         

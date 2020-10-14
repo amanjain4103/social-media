@@ -21,7 +21,7 @@ function Sidebar() {
     const history =  useHistory();
     const [screenSize, setScreenSize] = useState(window.innerWidth);
     const [isSidebarToggled, setIsSidebarToggled] = useState(false);
-    const [{user,authToken},dispatch] = useStateValue();
+    const [{user,authToken},] = useStateValue();
     const [ isUploadCompVisible, setIsUploadCompVisible] = useState(false);
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
     const [imagePreviewSrc, setImagePreviewSrc] = useState(null);
@@ -102,7 +102,7 @@ function Sidebar() {
                         <SidebarButton
                             color="secondary" 
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={ () => { history.push("/feeds") } }
                             startIcon={<PhotoLibraryIcon />}
                         >
                             Feeds
@@ -121,7 +121,7 @@ function Sidebar() {
                             // variant="outlined" 
                             color="secondary" 
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={() => { history.push("/signin") } }
                             startIcon={<NotificationsActiveIcon />}
                         >
                             Notifications
@@ -213,17 +213,27 @@ function Sidebar() {
                     .then(url => {
                         // now you can save image url inside database
                         console.log(url);
+                        
+                        console.log(authToken);
 
                         fetch(`${BASE_URL}/secured/upload`, {
                             method: "POST",
-                            heders: {
+                            headers: {
                                 "Content-Type":"application/json",
                                 "auth-token": authToken
                             },
                             body: JSON.stringify({
-                                
+                                postSrc: url,
+                                avatarSrc: user.avatarSrc,
+                                caption: caption,
+                                email: user.email,
                             })
+                            
+
                         })
+                        .then(res => res.json())
+                        .then(res => console.log(res))
+                        .catch(err => alert(err))
 
                         // resetting back to default
                         setProgress(0);
@@ -234,16 +244,6 @@ function Sidebar() {
             }
         )
 
-        // fetch(`${BASE_URL}/secured/upload`,{
-        //     method:"POST",
-        //     headers: {
-        //         "Content-Type":"application/json"
-        //     },
-        //     enctype: "multipart/form-data",
-            
-        // })
-
-        console.log("hello")
     }
 
 

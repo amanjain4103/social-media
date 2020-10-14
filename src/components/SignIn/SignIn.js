@@ -16,7 +16,7 @@ const SignIn = () => {
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
-    const [{}, dispatch] = useStateValue();
+    const [, dispatch] = useStateValue();
     
     //email validation
     const handleEmail = (e) => {
@@ -73,7 +73,8 @@ const SignIn = () => {
                         email: res.email,
                         avatarSrc: res.avatarSrc,
                         numberOfPosts: res.numberOfPosts,
-                        numberOfLikes: res.numberOfLikes
+                        numberOfLikes: res.numberOfLikes,
+                        authToken: res.authToken
                     }
                 })
                 // waiting for state to be set so that feeds route will be available
@@ -103,7 +104,7 @@ const SignIn = () => {
                     </div>
                     
 
-                    <form noValidate="false" autoComplete="off">
+                    <form autoComplete="off">
                         <div className="signin__formFields">
                             <TextField
                                 value={email}
