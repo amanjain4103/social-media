@@ -2,7 +2,7 @@ import React from 'react'
 import "./Feeds.css";
 import Topbar from '../Topbar/Topbar';
 import FeedsList from '../FeedsList/FeedsList';
-import ExploreTab from '../ExploreTab/ExploreTab';
+// import ExploreTab from '../ExploreTab/ExploreTab';
 import WithSidebarLayout from '../../Layouts/WithSidebarLayout/WithSidebarLayout';
 
 function Feeds() {
@@ -17,9 +17,9 @@ function Feeds() {
                     <FeedsList />
                 </div>
                 
-                <div className="feeds__explore">
+                {/* <div className="feeds__explore">
                     <ExploreTab />
-                </div>
+                </div> */}
                 
             </div>
         </WithSidebarLayout>

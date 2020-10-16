@@ -117,7 +117,7 @@ function Sidebar() {
                             Chat
                         </SidebarButton>
 
-                        <SidebarButton
+                        {/* <SidebarButton
                             // variant="outlined" 
                             color="secondary" 
                             fullWidth
@@ -135,13 +135,13 @@ function Sidebar() {
                             startIcon={<WidgetsIcon />}
                         >
                             Explore
-                        </SidebarButton>
+                        </SidebarButton> */}
 
                         <SidebarButton
                             // variant="outlined" 
                             color="secondary" 
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={() => { history.push("/signin") }}
                             startIcon={<VideoCallIcon />}
                         >
                             Video Call

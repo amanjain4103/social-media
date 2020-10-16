@@ -53,11 +53,14 @@ const Profile = (props) => {
                     "numberOfPosts": res.numberOfPosts,
                     "numberOfLikes": res.numberOfLikes
                 })
+
+                setPostsForRenderingOnProile(res.posts.map(item => item.postSrc));
+                
             }else {
                 alert(res.message);
             }
 
-            setPostsForRenderingOnProile(res.posts.map(item => item.postSrc));
+            
 
             console.log(res);
             console.log(postsForRenderingOnProile);

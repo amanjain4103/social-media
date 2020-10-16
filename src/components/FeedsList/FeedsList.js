@@ -7,7 +7,7 @@ function FeedsList() {
 
     const [feeds,setFeeds] = useState(null);
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
-    const [{authToken},] = useStateValue();
+    const [{user,authToken},] = useStateValue();
 
     useEffect(() => {
         fetch(`${BASE_URL}/secured/feeds`, {
@@ -38,7 +38,8 @@ function FeedsList() {
                             feeds.map((feed) => {
                                 return (
                                     <FeedCard
-                                        key={feed.email+feed.avatarSrc+feed.postSrc} 
+                                        key={feed._id} 
+                                        id={feed._id}
                                         username={feed.email}
                                         avatarSrc={feed.avatarSrc}
                                         postSrc={feed.postSrc}
@@ -46,6 +47,9 @@ function FeedsList() {
                                         caption={feed.caption}
                                         comments={feed.comments}
                                         isLiked={false}
+                                        currentUserEmail={user.email}
+                                        authToken={authToken}
+                                        BASE_URL={BASE_URL}
                                     />
                                 ) 
                             })

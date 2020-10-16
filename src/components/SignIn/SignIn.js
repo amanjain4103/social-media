@@ -48,6 +48,7 @@ const SignIn = () => {
         
         e.preventDefault();
         
+        console.log("hello")
         fetch(`${BASE_URL}/users/signin`, {
             method:"POST",
             headers: {
