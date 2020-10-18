@@ -9,6 +9,39 @@ const FeedCard = (props) =>  {
     const [isLiked,setIsLiked] = useState(false);
     const [howLikeStarted,setHowLikeStarted] = useState(false);
     const [numOfLikes,setNumOfLikes] = useState(props.likes.length);
+    const [areCommentsHidden,setAreCommentsHidden] = useState(true);
+    const [comments,setComments] = useState(props.comments)
+    const [currentCommentMessage, setCurrentCommentMessage] = useState("");
+    const initialLikes = props.likes.length;
+    const manipulateLikeToDB = (likeToBeAdded) => {
+        
+        fetch(`${props.BASE_URL}/secured/likes`, {
+            method: "PUT",
+            headers: {
+                "Content-Type":"application/json",
+                "auth-token": props.authToken
+            },
+            body:JSON.stringify({
+                "likeToBeAdded":likeToBeAdded, //likeToBeAdded => true/false
+                "feedId":props.id,
+                "emailToBeManipulated":props.currentUserEmail
+            })
+        })
+        .then(res=> res.json())
+        .then(res => {
+            console.log(res.message);
+            if(res.message === "likeAddedSuccessfully") {
+                // no problem all done 
+            }else if(res.message === "likeDeletedSuccessfully") {
+                // no problem all done 
+            }else {
+                alert(res.message);
+            }
+        })
+        .catch(err => {
+            alert("Some Error Occured on Your side!!!")
+        })
+    }
 
     useEffect(() => {
         let temp = props.likes.filter((item)=> {
@@ -24,97 +57,76 @@ const FeedCard = (props) =>  {
     }, [])
 
     useEffect(() => {
+        
         if(howLikeStarted) {
 
             if(!isLiked) {
                 // extra if because it is giving negtive when hit first time
                 if(numOfLikes!==0) {
                     setNumOfLikes((numOfLikes)=> (--numOfLikes))
+                    manipulateLikeToDB(false);
                 }
             }else {
-                setNumOfLikes((numOfLikes)=> (++numOfLikes))
+
+                if( numOfLikes < initialLikes ) {
+                    setNumOfLikes((numOfLikes)=> (++numOfLikes))
+                    manipulateLikeToDB(true);
+                }
+                
             }
         }else {
             if(isLiked) {
                 setNumOfLikes((numOfLikes)=> (++numOfLikes))
+                manipulateLikeToDB(true);
             }else {
                 if(numOfLikes!==0) {
-                    setNumOfLikes((numOfLikes)=> (--numOfLikes))
+                    if( numOfLikes > initialLikes ) {
+                        setNumOfLikes((numOfLikes)=> (--numOfLikes))
+                        manipulateLikeToDB(false);
+                    }
                 } 
             }
         }
+
     },[isLiked])
-
-    useEffect(() => {
-
-        // this is only for un mounting and adding likes to db
-            return () => {
-                console.log("unmount")
-                // now manipulate db to add and remove likes then do fetch from here
-                if(howLikeStarted == isLiked) {
-                    // no need to manipulate db
-                }else {
-                    if(howLikeStarted) {
-    
-                        // pop the current user from likes array in database
-                        fetch(`${props.BASE_URL}/secured/likes`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type":"application/json",
-                                "auth-token": props.authToken
-                            },
-                            body:JSON.stringify({
-                                "likeToBeAdded":false,
-                                "feedId":props.id,
-                                "emailToBeManipulated":props.currentUserEmail
-                            })
-                        })
-                        .then(res=> res.json())
-                        .then(res => {
-                            if(res.message === "likeDeletedSuccessfully") {
-                                // no problem all done 
-                            }else {
-                                alert(res.message);
-                            }
-                        })
-                        .catch(err => {
-                            alert("Some Error Occured on Your side!!!")
-                        })
-    
-                    }else {
-                        // push the current user to the likes array in db
-                        fetch(`${props.BASE_URL}/secured/likes`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type":"application/json",
-                                "auth-token": props.authToken
-                            },
-                            body:JSON.stringify({
-                                "likeToBeAdded":true,
-                                "feedId":props.id,
-                                "emailToBeManipulated":props.currentUserEmail
-                            })
-                        })
-                        .then(res=> res.json())
-                        .then(res => {
-                            if(res.message === "likeAddedSuccessfully") {
-                                // no problem all done 
-                            }else {
-                                alert(res.message);
-                            }
-                        })
-                        .catch(err => {
-                            alert("Some Error Occured on Your side!!!")
-                        })
-    
-                    }
-                }
-            }
-        
-    }, [isLiked,howLikeStarted])
 
     const handleLikeButton = () => {
         setIsLiked((isLiked)=> !isLiked)
+    }
+
+    const handleCommentsButton = () => {
+        setAreCommentsHidden((areCommentsHidden)=> !areCommentsHidden)
+    }
+
+    const addComment = (e) => {
+        e.preventDefault();
+                
+        fetch(`${props.BASE_URL}/secured/add-comment`, {
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json",
+                "auth-token":props.authToken
+            },
+            body: JSON.stringify({
+                "feedId":props.id,
+                "email":props.currentUserEmail,
+                "message":currentCommentMessage
+            })
+            
+        })
+        .then((res) => res.json())
+        .then(res => {
+
+            if(res.message === "commentAddedSuccessfully") {
+                setComments((comments) => [...comments, {"email":props.currentUserEmail,"message":currentCommentMessage}]) 
+                setCurrentCommentMessage("");
+            }
+        })
+        .catch((err) => {
+            alert("Check your Internet Connection!!!")
+        })
+        
+
     }
 
     return (
@@ -138,7 +150,7 @@ const FeedCard = (props) =>  {
                         <WhatshotIcon style={{ fontSize: 30 }} />
                     </IconButton>
 
-                    <IconButton color="primary" >
+                    <IconButton color={areCommentsHidden?"primary":"secondary"}  onClick={handleCommentsButton} >
                         <InsertCommentIcon style={{ fontSize: 30 }} />
                     </IconButton>
                 </div>
@@ -149,17 +161,39 @@ const FeedCard = (props) =>  {
                     <p className="feedCard__caption">{props.caption}</p>
                 </div>
                 {/* number of likes */}
-
                 {/* caption */}
 
-                <form className="feedCard__addComment">
-                    <input placeholder="write comment" type="text" />
+                {
+                    areCommentsHidden
+                    ?
+                    ("")
+                    :
+                    (
+                        <div className="feedCard__comments">
+                            
+                            {
+                                comments?.map((comment,index) => {
+                                    return (
+                                        <div key={index} className="feedCard__comments__commentItem">
+                                            <strong>{comment.email}</strong> &nbsp; {comment.message}
+                                        </div>
+                                    )
+                                })
+                            }
+                            
+                        </div>
+                    )
+                }
+                
+
+                <form className="feedCard__addComment" onSubmit={(e) => addComment(e)}>
+                    <input placeholder="write comment" value={currentCommentMessage} type="text" onChange={(e) => setCurrentCommentMessage(e.target.value)} />
                     
                     <Button
                         disableElevation
                         color="secondary"
-                        // type="submit"
-                        // onClick={postThisComment}
+                        type="submit"
+                        // onClick={addComment}
                     >
                         post
                     </Button>

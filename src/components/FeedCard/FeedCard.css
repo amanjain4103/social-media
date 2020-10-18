@@ -49,6 +49,14 @@
     font-weight: bold;
 }
 
+.feedCard__caption {
+    /* font-weight: 200; */
+}
+
+.feedCard__comments {
+    padding: 5px 10px;
+}
+
 .feedCard__addComment {
     padding: 10px;
     border-top:1px solid lightgray;
