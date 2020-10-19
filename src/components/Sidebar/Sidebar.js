@@ -111,7 +111,7 @@ function Sidebar() {
                         <SidebarButton
                             color="secondary" 
                             fullWidth
-                            onClick={handleProfile}
+                            onClick={() => { history.push("/chat") }}
                             startIcon={<ForumIcon />}
                         >
                             Chat

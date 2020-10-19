@@ -8,10 +8,12 @@ import Feeds from "./components/Feeds/Feeds";
 import { useStateValue } from './StateProvider';
 import Profile from './components/Profile/Profile';
 import Upload from './components/Upload/Upload';
+import PrivateRoute from "./PrivateRoute";
+import Chat from './components/Chat/Chat';
 
 const App = () => {
 
-  const [{user},] = useStateValue();
+  const [{user,authToken},] = useStateValue();
 
   // fetch user data from server
   // useEffect(() => {
@@ -39,13 +41,25 @@ const App = () => {
             <SignUp />
           </Route>
 
-          <Route path="/feeds">
-             <Feeds />
-          </Route>
-       
-          <Route path="/profile">
+          <PrivateRoute path="/feeds" >
+            <Feeds />
+          </PrivateRoute>
+
+          <PrivateRoute path="/profile">
             <Profile email={user?.email}  />
+          </PrivateRoute>
+
+          <Route path="/chat">
+            <Chat />
           </Route>
+
+          {/* <Route path="/feeds">
+             <Feeds />
+          </Route> */}
+       
+          {/* <Route path="/profile">
+            <Profile email={user?.email}  />
+          </Route> */}
           
 
           {/* <Route path='/:username' render={(props) => {

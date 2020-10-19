@@ -1,0 +1,102 @@
+.chat__right__bottombar {
+    display: flex;
+    padding: 15px;
+    justify-content: center;
+
+}
+
+.chat__userBox {
+    border: 1px solid gray;
+    padding: 10px;
+    min-width: 70%;
+}
+
+.chat__userBox > h2 {
+    text-align: center;
+    text-transform: uppercase;
+    color: #3f51b5;
+    border-bottom: 1px solid gray;
+}
+
+.chat__chatting {
+    border: 1px solid gray;
+    padding: 10px;
+    min-width: 70%;
+}
+
+.chat__chatting__top {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.chat__chatting__top__left {
+    display: flex;
+    align-items: center;
+}
+
+.chat__chatting__top__left > p {
+    margin-left: 10px;
+}
+
+.chat__chatMessage {
+    background-color: #3f51b5;
+    padding: 3px 10px;
+    width: fit-content;
+    margin-top: 5px;
+    border-radius: 10px 0px;
+}
+
+.chat__primaryMessage {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.chat__nameOnMessage {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #32ff7e;
+}
+
+
+.chat__chatMessage__mine {
+    background-color: #ab003c;
+    border-radius: 10px 0px;
+    padding: 3px 10px;
+    width: fit-content;
+    margin-top: 5px;
+    margin-left: auto;
+}
+
+.chat__nameOnMessage__mine {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #32ff7e;
+    text-align: end;
+}
+
+.chat__sendMessage {
+    border-top: 1px solid lightgray;
+    padding-top: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.chat__sendMessage > input {
+    height: 100%;
+    font-size: 15px;
+    padding: 8px;
+    flex-grow: 1;
+    margin-right: 5px;
+}
+
+@media only screen and (max-width: 500px) {
+    
+    .chat__right__bottombar {
+        flex-direction: column;
+    }
+
+}
