@@ -14,6 +14,7 @@ const Chat = () => {
     const history = useHistory();
     const BASE_URL = process.env.REACT_APP_BASE_URL
     const [{user},] = useStateValue();
+    const [saveNewChats, setSaveNewChats] = useState(false);
     const [usersList, setUsersList] = useState();
     const [fromEmail, setFromEmail] = useState(user.email);
     const [sendToEmail, setSendToEmail] = useState("");
@@ -22,24 +23,10 @@ const Chat = () => {
         {
             "fromEmail":"aman@gmail.com",
             "message":"Hiie buddy, how are you!",
-            "sendToEmail":"akku@gmail.com"
-        },
-        {
-            "fromEmail":"akku@gmail.com",
-            "message":"Hiie baby",
-            "sendToEmail":"aman@gmail.com"
-        },
-        {
-            "fromEmail":"aman@gmail.com",
-            "message":"I love you",
-            "sendToEmail":"akku@gmail.com"
-        },
-        {
-            "fromEmail":"akku@gmail.com",
-            "message":"I am missing you baby, I love you 3000!",
-            "sendToEmail":"aman@gmail.com"
+            "sendToEmail":"tony@gmail.com"
         }
     ]);
+    const [newChatMessages, setNewChatMessages] = useState([]);
 
     // {
     //     "_id": {
@@ -120,8 +107,8 @@ const Chat = () => {
     
                         if("gotPreviousChatSuccessFully") {
                             // console.log(res);
-                            setAllChatMessages(res.previousChatMessages);
-                            
+                            setAllChatMessages([...res.previousChatMessages]);
+
                         }else if("noPreviousChats") {
                             console.log(res.message);
                         }else {
@@ -144,6 +131,8 @@ const Chat = () => {
                 newSocket.on("chat-message",messageObj => {
                     // console.log(messageObj);
                     setAllChatMessages((allChatMessages) => [...allChatMessages,{"fromEmail":messageObj.fromEmail,"message":messageObj.message,"sendToEmail":messageObj.sendToEmail}]);
+                    setNewChatMessages((newChatMessages) => [...newChatMessages,{"fromEmail":messageObj.fromEmail,"message":messageObj.message,"sendToEmail":messageObj.sendToEmail}] )
+                    
                 })
             }
         }
@@ -156,14 +145,17 @@ const Chat = () => {
         e.preventDefault();
         // console.log("hello")
 
-        if(message!=="") {
+        if(message.trim()!=="") {
             socket.emit("send-chat-message",{"fromEmail":fromEmail,"message":message,"sendToEmail":sendToEmail});
             setAllChatMessages((allChatMessages) => [...allChatMessages,{"fromEmail":fromEmail,"message":message,"sendToEmail":sendToEmail}]);
+            setNewChatMessages((newChatMessages) => [...newChatMessages,{"fromEmail":fromEmail,"message":message,"sendToEmail":sendToEmail}] )
             setMessage("");
+            
         }
     }
 
     const handleUserForConversation = (newUserEmail) => {
+        setSaveNewChats(false);
         setSendToEmail(newUserEmail);
         console.log(newUserEmail);
     }
@@ -213,7 +205,7 @@ const Chat = () => {
                         <div className="chat__chatting">
                             <div className="chat__chatting__top">
                                 <div className="chat__chatting__top__left">
-                                    <IconButton color="default" style={{"marginRight":"5px"}} onClick={() => setSendToEmail("")}>
+                                    <IconButton color="default" style={{"marginRight":"5px"}} onClick={() => { setSaveNewChats(true); setSendToEmail("");} }>
                                         <ArrowBackIcon />
                                     </IconButton>
                                     <Avatar alt="username" src="" />

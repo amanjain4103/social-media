@@ -49,9 +49,9 @@ const App = () => {
             <Profile email={user?.email}  />
           </PrivateRoute>
 
-          <Route path="/chat">
+          <PrivateRoute path="/chat">
             <Chat />
-          </Route>
+          </PrivateRoute>
 
           {/* <Route path="/feeds">
              <Feeds />
