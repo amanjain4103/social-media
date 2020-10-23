@@ -23,7 +23,7 @@
     border: 1px solid gray;
     padding: 10px;
     min-width: 70%;
-    max-height: 80vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
 }

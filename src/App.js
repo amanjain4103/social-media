@@ -10,6 +10,7 @@ import Profile from './components/Profile/Profile';
 import Upload from './components/Upload/Upload';
 import PrivateRoute from "./PrivateRoute";
 import Chat from './components/Chat/Chat';
+import VideoCall from './components/VideoCall/VideoCall';
 
 const App = () => {
 
@@ -52,6 +53,10 @@ const App = () => {
           <PrivateRoute path="/chat">
             <Chat />
           </PrivateRoute>
+
+          <Route path="/videocall">
+            <VideoCall />
+          </Route>
 
           {/* <Route path="/feeds">
              <Feeds />

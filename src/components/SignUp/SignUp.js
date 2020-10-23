@@ -135,7 +135,6 @@ const SignUp = () => {
             })
             .then((res => res.json()))
             .then((res => {
-                console.log(res.message)
                 
                 if(res.message=== "otpSent") {
                     // otp sent successfully
@@ -146,6 +145,12 @@ const SignUp = () => {
                         lastName: lastName,
                         email: email
                     })
+
+                    // console.log({
+                    //     firstName: firstName,
+                    //     lastName: lastName,
+                    //     email: email
+                    // });
 
                 }else {
                     // may be some error occured
@@ -188,14 +193,15 @@ const SignUp = () => {
             },
             body: JSON.stringify({
                 "phonenumber":phoneNumber,
-                "code":otp
+                "code":otp,
+                "firstName": firstName,
+                "lastName": lastName,
+                "email": email,
+                "password": password
             })
         })
         .then((res => res.json()))
         .then((res => {
-
-            console.log(res.message)
-
 
             if(res.message ==="successfulSignup") {
                 // hence the user is created and now I can signin with those credentials
@@ -212,10 +218,6 @@ const SignUp = () => {
             console.log(error)
         })
 
-        if(true) {
-            console.log("verified with server");
-            
-        }
     }
 
     return (

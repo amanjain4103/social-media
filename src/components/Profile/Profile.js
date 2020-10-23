@@ -60,10 +60,6 @@ const Profile = (props) => {
                 alert(res.message);
             }
 
-            
-
-            console.log(res);
-            console.log(postsForRenderingOnProile);
         })
         .catch( (err) => {
             alert(err)

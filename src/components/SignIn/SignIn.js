@@ -48,7 +48,6 @@ const SignIn = () => {
         
         e.preventDefault();
         
-        console.log("hello")
         fetch(`${BASE_URL}/users/signin`, {
             method:"POST",
             headers: {
@@ -65,7 +64,7 @@ const SignIn = () => {
             if(res.authToken) {
                 // means that user is verified and have recieved the token
 
-                console.log(res);
+                // console.log(res);
                 dispatch({
                     type:"SET_USER",
                     payload:{

@@ -2,12 +2,18 @@
     background-color: white;
     max-width: 400px;
     margin-bottom: 15px;
+    border: 1px dashed blue;
+    transition: 0.3s;
+}
+
+.feedCard:hover {
+    cursor: pointer;
+    box-shadow: 4px 4px 5px 1px lightgray;
 }
 
 .feedCard__top {
     display: flex;
     padding: 10px;
-    border-bottom: 1px solid lightgray;
 }
 
 .MuiAvatar-root {
@@ -30,7 +36,7 @@
 }
 
 .feedCard__post > img {
-    width: 250px;
+    width: 90%;
     height: 250px;
     object-fit: contain;
 }
@@ -59,7 +65,7 @@
 
 .feedCard__addComment {
     padding: 10px;
-    border-top:1px solid lightgray;
+    border-top:1px dashed blue;
     display: flex;
     justify-content: space-between;
 }

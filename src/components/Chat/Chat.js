@@ -27,38 +27,27 @@ const Chat = () => {
         }
     ]);
     const [newChatMessages, setNewChatMessages] = useState([]);
-
-    // {
-    //     "_id": {
-    //         "$oid": "5f8f0aadbe1eade1010d0804"
-    //     },
-    //     "roomId": "aman@gmail.com",
-    //     "chatMessages": [{
-    //         "fromEmal": "aman@gmail.com",
-    //         "message": "hiie budddy",
-    //         "sendToEmail": "akku@gmail.com"
-    //     }, {
-    //         "fromEmal": "akku@gmail.com",
-    //         "message": "hiie budddy",
-    //         "sendToEmail": "aman@gmail.com"
-    //     }, {
-    //         "fromEmal": "aman@gmail.com",
-    //         "message": "hiie budddy",
-    //         "sendToEmail": "tony@gmail.com"
-    //     }, {
-    //         "fromEmal": "tony@gmail.com",
-    //         "message": "hiie budddy",
-    //         "sendToEmail": "aman@gmail.com"
-    //     }]
-    // }
-
+    const [customRoomId,setCustomRoomId] = useState("");
     const [message, setMessage] = useState("");
+    const [makeAVideoCall, setMakeAVideoCall] = useState(false);
     const setRef = useCallback(node => {
         if(node) {
             return node?.scrollIntoView({smooth: true})
         }
     },[])
     
+    // video call functionality
+
+    const handleEndVideoCall = () => {
+        console.log("video call ended");
+    }
+
+    const myPeer = new Peer(undefined, {
+        host: '/',
+        port: '3001'
+    })
+
+
     
     useEffect(() => {
 
@@ -97,6 +86,7 @@ const Chat = () => {
                 alert("not able to start new conversation!!!")
             }
 
+            setCustomRoomId(roomId);
             // console.log(roomId);
             window.setTimeout(() => {
                 if(roomId) {
@@ -123,7 +113,8 @@ const Chat = () => {
             
 
             newSocket.on("connection-establish", data => {
-                console.log(data);
+                // console.log(data);
+                // connection is established
             })
 
             // console.log(socket)
@@ -157,7 +148,7 @@ const Chat = () => {
     const handleUserForConversation = (newUserEmail) => {
         setSaveNewChats(false);
         setSendToEmail(newUserEmail);
-        console.log(newUserEmail);
+        // console.log(newUserEmail);
     }
 
     return (
@@ -183,7 +174,7 @@ const Chat = () => {
                                                 usersList.map((currentUser,index) => {
                                                     return (
                                                         <ListItem key={index} button onClick={() => handleUserForConversation(currentUser.email) } >
-                                                            <ListItemText primary={currentUser.email} />
+                                                            <ListItemText primary={currentUser.email.split("@")[0]} />
                                                         </ListItem>
                                                     )
                                                 })
@@ -209,9 +200,9 @@ const Chat = () => {
                                         <ArrowBackIcon />
                                     </IconButton>
                                     <Avatar alt="username" src="" />
-                                    <p>{sendToEmail}</p>
+                                    <p>{sendToEmail.split("@")[0]}</p>
                                 </div>
-                                <IconButton color="secondary" >
+                                <IconButton color="secondary" onClick={setMakeAVideoCall(true)} >
                                     <VideocamIcon />
                                 </IconButton>
                             </div>
@@ -226,18 +217,18 @@ const Chat = () => {
                                             {allChatMessages.map((item,index) => {
 
                                                 var lastMessage = allChatMessages.length - 1 === index;
-                                                if(item.fromEmail === fromEmail) {
+                                                if(item.sendToEmail === sendToEmail && item.fromEmail === fromEmail) { //fromEmail: my email, //sendToEmail: samne wale ki 
                                                     return (
                                                         <div ref={lastMessage ? setRef : null} key={index} className="chat__chatMessage__mine">
                                                             <p className="chat__primaryMessage">{item.message}</p>
                                                             <p className="chat__nameOnMessage__mine">you</p>
                                                         </div>
                                                     )
-                                                }else if(item.sendToEmail === user.email) {
+                                                }else if(item.sendToEmail === fromEmail && item.fromEmail === sendToEmail) {
                                                     return (
                                                         <div ref={lastMessage ? setRef : null} key={index} className="chat__chatMessage">
                                                             <p className="chat__primaryMessage">{item.message}</p>
-                                                            <p className="chat__nameOnMessage">{item.fromEmail}</p>
+                                                            <p className="chat__nameOnMessage">{item.fromEmail.split("@")[0]}</p>
                                                         </div>
                                                     )
                                                 }else { return "" }
@@ -268,81 +259,18 @@ const Chat = () => {
                         </div>    
                     )
                 }
+
+                {/* video calling components */}
                 
-                {/* <div className="chat__userBox">
-
-                    <h2>Start a new conversation</h2>
-
-                    <List component="nav" aria-label="contacts">
-                        <ListItem button onClick={() => handleUserForConversation("aman@gmail.com") } >
-                            <ListItemText primary="aman@gmail.com" />
-                        </ListItem>
-                        <ListItem button onClick={() => handleUserForConversation("tony@gmail.com") }>
-                            <ListItemText primary="tony@gmail.com" />
-                        </ListItem>
-                    </List>
-
-                </div> */}
-
-                {/* <div className="chat__chatting">
-                    <div className="chat__chatting__top">
-                        <div className="chat__chatting__top__left">
-                            <Avatar alt="username" src="" />
-                            <p>aman@gmail.com</p>
-                        </div>
-                        <IconButton color="secondary" >
-                            <VideocamIcon />
-                        </IconButton>
-                    </div>
-
-                    <div className="chat__messageContainer">
-
-                        {
-                            allChatMessages?.length > 0
-                            ? 
-                            (
-                                <>
-                                    {allChatMessages.map((item,index) => {
-                                        if(item.email === "akku@gmail.com") {
-                                            return (
-                                                <div key={index} className="chat__chatMessage__mine">
-                                                    <p className="chat__primaryMessage">{item.message}</p>
-                                                    <p className="chat__nameOnMessage__mine">you</p>
-                                                </div>
-                                            )
-                                        }else {
-                                            return (
-                                                <div key={index} className="chat__chatMessage">
-                                                    <p className="chat__primaryMessage">{item.message}</p>
-                                                    <p className="chat__nameOnMessage">{item.email}</p>
-                                                </div>
-                                            )
-                                        }
-                                    })}
-                                </>
-                            )
-                            :
-                            ("")
-                        }
-
-                        <div className="chat__chatMessage">
-                            <p className="chat__primaryMessage">message here</p>
-                            <p className="chat__nameOnMessage">user name</p>
-                        </div>
-                        <div className="chat__chatMessage__mine">
-                            <p className="chat__primaryMessage">message here</p>
-                            <p className="chat__nameOnMessage__mine">user name</p>
-                        </div>
-                        
-                    </div>
-
-                    <form className="chat__sendMessage" onSubmit={(e) => handleMessageSubmit(e)} >
-                        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)}/>
-                        <Button type="submit" color="secondary">
-                            send
-                        </Button>
-                    </form>
-                </div> */}
+                {
+                    makeAVideoCall
+                    ?
+                    (
+                        <VideoCall roomId={customRoomId} endVideoCall={handleEndVideoCall} />
+                    )
+                    :
+                    ("")
+                }
                 
             </div>
         </WithSidebarLayout>

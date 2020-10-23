@@ -19,7 +19,7 @@ function FeedsList() {
         .then(res => {
             if(res.message==="feedsFetchedSuccessfully") {
                 setFeeds(res.feeds);
-                console.log(res.feeds);
+                // console.log(res.feeds);
             }else {
                 alert(res.message);
             }

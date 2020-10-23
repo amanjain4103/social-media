@@ -29,7 +29,7 @@ const FeedCard = (props) =>  {
         })
         .then(res=> res.json())
         .then(res => {
-            console.log(res.message);
+            // console.log(res.message);
             if(res.message === "likeAddedSuccessfully") {
                 // no problem all done 
             }else if(res.message === "likeDeletedSuccessfully") {
