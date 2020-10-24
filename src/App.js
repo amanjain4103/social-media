@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import SignIn from "./components/SignIn/SignIn";
@@ -11,23 +11,34 @@ import Upload from './components/Upload/Upload';
 import PrivateRoute from "./PrivateRoute";
 import Chat from './components/Chat/Chat';
 import VideoCall from './components/VideoCall/VideoCall';
+import io from "socket.io-client";
 
 const App = () => {
+  
+  const [{user,authToken,socket},dispatch] = useStateValue();
+  const BASE_URL = process.env.REACT_APP_BASE_URL
+  
+  useEffect(() => {
+    
+    // attach a socket
+    var newSocket = io(BASE_URL,{ query:{id: "aman@gmail.com"}});
+    
+    newSocket.on("connection-establish", data => {
+      console.log(data); 
+      // connection is established
+    })
+    
+    // setting socket globally
+    dispatch({
+      type:"SET_SOCKET",
+      payload:{
+        myNewSocket: newSocket
+      }
+    })
 
-  const [{user,authToken},] = useStateValue();
+    return () => newSocket?.close();
 
-  // fetch user data from server
-  // useEffect(() => {
-  //   fetch(`${BASE_URL}/secured/getuser`, {
-  //     headers: {
-  //         "auth-token":{authToken}
-  //     }
-  // })
-  // .then((res => res.json()))
-  // .then((res => {
-  //     console.log(res)
-  // }))
-  // }, [user])
+  }, [])
 
   return (
     <Router>

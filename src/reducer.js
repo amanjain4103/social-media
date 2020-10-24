@@ -5,6 +5,7 @@ export const initialState = {
     authToken: "",
     sayHello:"hello world",
     user:{},
+    socket:null
 }
 
 export const reducer = (state, action) => {
@@ -24,7 +25,17 @@ export const reducer = (state, action) => {
                 },
                 authToken: action.payload.authToken
             }
+        case "SET_SOCKET":
+            return {
+                ...state,
+                socket: action.payload.myNewSocket
+            }
         
+        case "REMOVE_SOCKET":
+            // do stuff later
+            return {
+                ...state
+            }
         
         default: 
             return state;
