@@ -13,6 +13,14 @@
     flex-wrap: wrap;    
     justify-content: space-around;
     padding: 10px;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.profile__top:hover {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px 1px lightgray;
 }
 
 .profile__top__left {
@@ -59,7 +67,11 @@
 }
 
 .profile__bottom > h2 {
-    margin: 10px 0px;
+    padding: 10px 0px;
+    width: 100%;
+    text-align: center;
+    background: white;
+    box-shadow: 0px 4px 5px 1px grey;
 }
 
 

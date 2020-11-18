@@ -5,7 +5,10 @@ export const initialState = {
     authToken: "",
     sayHello:"hello world",
     user:{},
-    socket:null
+    socket:null,
+    newFeedCount:0,
+    isVideoCallReceiver: false,
+    wantToCloseReceiversVideoCallView: false
 }
 
 export const reducer = (state, action) => {
@@ -25,10 +28,22 @@ export const reducer = (state, action) => {
                 },
                 authToken: action.payload.authToken
             }
-        case "SET_SOCKET":
+        case "SET_NEW_FEED_COUNT":
             return {
                 ...state,
-                socket: action.payload.myNewSocket
+                newFeedCount: state.newFeedCount + action.payload.newFeedCount
+            }
+
+        case "SET_IS_VIDEO_CALL_RECEIVER":
+            return {
+                ...state,
+                isVideoCallReceiver: action.payload.isVideoCallReceiver
+            }
+        
+        case "CLOSE_RECEIVERS_VIDEO_CALL_VIEW":
+            return {
+                ...state,
+                wantToCloseReceiversVideoCallView: action.payload.wantToCloseReceiversVideoCallView
             }
         
         case "REMOVE_SOCKET":

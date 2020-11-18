@@ -324,7 +324,7 @@ const Chat = () => {
                 
             </div>
 
-            <VideoCall roomId={"aman@gmail.com"} socketForVideoCall={socket} endVideoCall={() => {console.log("end video call")}} />
+            {/* <VideoCall roomId={"aman@gmail.com"} socketForVideoCall={socket} endVideoCall={() => {console.log("end video call")}} /> */}
 
         </WithSidebarLayout>
     )

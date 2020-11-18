@@ -1,7 +1,6 @@
 .feedslist {
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow-y:auto;
     max-height: 80vh;
 }

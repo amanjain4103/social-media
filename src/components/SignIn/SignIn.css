@@ -10,6 +10,7 @@
     padding: 20px 25px;
     min-width: 300px;
     border-radius: 5px;
+    background-color: white;
 }
 
 .signin__formFields {
@@ -18,5 +19,5 @@
 
 .signin__logo {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }

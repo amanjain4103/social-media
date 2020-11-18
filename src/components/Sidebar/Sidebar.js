@@ -15,13 +15,14 @@ import { useStateValue } from '../../StateProvider';
 import {useHistory} from "react-router-dom";
 import FullScreenOverlayLayout from '../../Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
 import storage from "../../firebase.js"
+import io from "socket.io-client";
 
 function Sidebar() {
 
     const history =  useHistory();
     const [screenSize, setScreenSize] = useState(window.innerWidth);
     const [isSidebarToggled, setIsSidebarToggled] = useState(false);
-    const [{user,authToken},] = useStateValue();
+    const [{user,authToken},dispatch] = useStateValue();
     const [ isUploadCompVisible, setIsUploadCompVisible] = useState(false);
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
     const [imagePreviewSrc, setImagePreviewSrc] = useState(null);
@@ -32,6 +33,45 @@ function Sidebar() {
     const handleProfile = () => {
 
     }
+
+    // realtime feeds on upload
+    const [socketForFeedUpload,setSocketForFeedUpload] = useState(null);
+
+    useEffect(() => {
+    
+        // attach a socket
+        var newSocket = io(BASE_URL,{ query:{id: "common@gmail.com"}});
+        
+        newSocket.on("connection-establish", data => {
+          console.log(data); 
+          // connection is established
+          setSocketForFeedUpload(newSocket);
+        })
+    
+        
+    
+        newSocket.on("new-feed",() => {
+            
+            // console.log("new feed available")
+            // new post is in data.data
+            // console.log(data)
+
+            dispatch({
+              type:"SET_NEW_FEED_COUNT",
+              payload:{
+                newFeedCount: 1
+              }
+            }) 
+        })
+    
+        newSocket.on('disconnect', function () {
+            console.log('disconnected with realtime feeds event');
+        });
+    
+        return () => newSocket?.close()
+    
+    }, [user])
+
 
     const toggleSmallScreenSidebar = () => {
         setIsSidebarToggled((prevCondition) => (!prevCondition))
@@ -141,7 +181,7 @@ function Sidebar() {
                             // variant="outlined" 
                             color="secondary" 
                             fullWidth
-                            onClick={() => { history.push("/signin") }}
+                            onClick={() => { history.push("/videocall") }}
                             startIcon={<VideoCallIcon />}
                         >
                             Video Call
@@ -212,9 +252,9 @@ function Sidebar() {
                     .getDownloadURL()
                     .then(url => {
                         // now you can save image url inside database
-                        console.log(url);
+                        // console.log(url);
                         
-                        console.log(authToken);
+                        // console.log(authToken);
 
                         fetch(`${BASE_URL}/secured/upload`, {
                             method: "POST",
@@ -227,12 +267,20 @@ function Sidebar() {
                                 avatarSrc: user.avatarSrc,
                                 caption: caption,
                                 email: user.email,
-                            })
-                            
+                            }) 
 
                         })
                         .then(res => res.json())
-                        .then(res => console.log(res))
+                        .then(res => {
+                            console.log(res)
+
+                            if(res.message === "uploadedSuccessfully") {
+                                
+                                socketForFeedUpload.emit("new-feed-uploaded-successfully")
+
+                            }
+                            // emitting event on socket
+                        })
                         .catch(err => alert(err))
 
                         // resetting back to default
@@ -269,7 +317,8 @@ function Sidebar() {
                         <div className="sidebar__logo">
                             <img 
                                 alt="logo"
-                                src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
+                                src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
+                                // src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
                             />
 
                         </div>
@@ -303,7 +352,7 @@ function Sidebar() {
                         <form className="sidebar__upload"  onSubmit={(e) => handleFeedUpload(e)}>
 
                             <div className="sidebar__upload__formFields">
-                                <LinearProgress color="primary" thickness={1} variant="determinate" value={progress} max="100" />
+                                <LinearProgress color="secondary" thickness={1} variant="determinate" value={progress} max="100" />
                             </div>
 
                             <div className="sidebar__upload__formFields">

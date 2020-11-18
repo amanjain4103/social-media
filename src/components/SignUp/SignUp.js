@@ -227,7 +227,11 @@ const SignUp = () => {
                 <div className="signup__form">
 
                     <div className="signup__logo">
-                        <h1>Social Media</h1>
+                        <img 
+                            alt="Social Media"
+                            src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
+                            height="100"
+                        />
                     </div>
 
                     {

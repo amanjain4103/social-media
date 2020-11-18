@@ -1,112 +1,408 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import "./VideoCall.css";
 import Peer from "peerjs";
 import { useStateValue } from '../../StateProvider';
 import io from "socket.io-client";
+import { List, ListItem, ListItemText, IconButton } from '@material-ui/core';
+import CallEndIcon from '@material-ui/icons/CallEnd';
+import {useHistory} from "react-router-dom";
+import WithSidebarLayout from '../../Layouts/WithSidebarLayout/WithSidebarLayout';
 
-const VideoCall = ({roomId, endVideoCall, socketForVideoCall}) =>  {
+const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsReceiver}) =>  {
 
-    const [{socket},] = useStateValue();
+    const history = useHistory();
+    const [{user}, dispatch] = useStateValue();
+    const VIDEO_CALL_SERVER_URL = process.env.REACT_APP_VIDEO_CALL_SERVER_URL;
     const BASE_URL = process.env.REACT_APP_BASE_URL;
-    const [currentVideo, setCurrentVideo] = useState();
-    
+    const [isVideoGridVisible, setIsVideoGridVisible] = useState(false);
+    const myVideoRef = useRef(null);
+    const myVideoAsReceiverRef = useRef(null);
+    const friendVideoRef = useRef(null);
+    const friendVideoAsReceiverRef = useRef(null);
+    const [myVideoStream, setMyVideoStream] = useState(null);
+    const [canIProceedToVideoCall, setCanIProceedToVideoCall] = useState(false);
+    const [usersList, setUsersList] = useState();
+    const [currentSocket, setCurrentSocket] = useState(null);
+
+    const [peer, setPeer] = useState( new Peer(undefined, {
+                                        path:"/peerjs",
+                                        host: "/", 
+                                        port:"3030" //node server port
+                                    }) )
+
+    const [isVideoCallReceiver, setIsVideoCallReceiver] = useState(isItReceiver);
+
+    const doSomething = () => {
+
+    }
 
     // peer initialization
-    const peer = new Peer(undefined, {
-        path:"/peerjs",
-        host: "/", 
-        port:"8000" //node server port
+    // const peer = new Peer(undefined, {
+    //     path:"/peerjs",
+    //     host: "/", 
+    //     port:"3030" //node server port
+    // })
+
+    useEffect(() => {
+        
+        fetch(`${BASE_URL}/users/get-all-users`)
+        .then(res => res.json())
+        .then(res => {
+
+            if("usersFetchedSuccessfully") {
+                // console.log(res);
+                setUsersList( (res.usersList).filter((thisUser) => thisUser?.email !== user?.email ) );
+            }else {
+                alert(res.message)
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
+        
+
+    },[])
+    
+
+    peer.on("close", () => {
+        console.log("peer closed ");
+        
+        setPeer( new Peer(undefined, {
+            path:"/peerjs",
+            host: "/", 
+            port:"3030" //node server port
+        }) );
+
+
+
+        if(isVideoCallReceiver) {
+            
+            if(myVideoAsReceiverRef) {
+                myVideoAsReceiverRef.current.srcObject = null;
+            }
+
+            if(friendVideoAsReceiverRef) {
+                friendVideoAsReceiverRef.current.srcObject = null;
+            }
+            
+
+        }else {
+
+            if(myVideoRef) {
+                myVideoRef.current.srcObject = null;
+            }
+            
+            if(friendVideoRef) {
+                friendVideoRef.current.srcObject = null;
+            }
+            
+
+        }
+
+        
+        setIsVideoCallReceiver(false);
+        setIsVideoGridVisible(false);
+        
+        
+        //removing audio/video tracks
+
+        if(myVideoStream) {
+
+            let audioTrack = myVideoStream.getAudioTracks();
+
+            if (audioTrack.length > 0) {
+
+                audioTrack.forEach((track) => {
+                    track.stop();
+                })
+                myVideoStream.removeTrack(audioTrack[0]);
+
+            }
+
+            let videoTrack = myVideoStream.getVideoTracks();
+
+            if (videoTrack.length > 0) {
+
+                videoTrack.forEach((track) => {
+                    track.stop();
+                })
+                myVideoStream.removeTrack(videoTrack[0]);
+
+            }
+
+        }
+        
+
     })
 
-    // temporary for testing
     useEffect(() => {
-
-        const myVideo = document.getElementById("video__videoGrid__myVideo");
-        const friendsVideo = document.getElementById("video__videoGrid__friendsVideo")
-
-        roomId = "aman@gmail.com";
-        // endVideoCall => in chat.js => just console logging right now
-        console.log(roomId);
-
-        //fake socket
-        var newSocket = io(BASE_URL,{ query:{id: "aman@gmail.com"}});
         
-        newSocket.on("connection-establish", data => {
-            console.log(data); 
-            // connection is established
-        })
+        // behave as a receiver
+        // videoCallFrom => someone else email,  videoCallTo => my email as a receiver
 
-        newSocket.emit("join-video-call",roomId, 10);
+        if(isVideoCallReceiver) {
 
-    // streaming videos
+            
+            
+            const newUniqueSocketForVideoCallAsAReceiver = io(VIDEO_CALL_SERVER_URL, { query:{id: `${videoCallPromptDataAsReceiver.videoCallFrom}123` }} )
+            
+            newUniqueSocketForVideoCallAsAReceiver.on("connected", () => {
+                console.log("initiated video call as a receiver")
+                setCurrentSocket(newUniqueSocketForVideoCallAsAReceiver);
+                // peer.on('open', id => {
+                //     console.log(id)
+                //     newUniqueSocketForVideoCallAsAReceiver.emit('i-want-to-join-video-call', `${videoCallPromptDataAsReceiver.videoCallFrom}123`, id);
+                // })
 
-        // streaming my own video
-        navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        }).then((stream) => {
+                navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                }).then(myStream => {
 
-            // myVideoStream = stream;
-            addVideoStream(myVideo, stream)
-            peer.on("call",call => {
-                call.answer(stream);
-                call.on("stream",friendsVideoStream => {
-                    addVideoStream(friendsVideo,friendsVideoStream);
+                    setMyVideoStream(myStream);
+                    addVideoStream(myVideoAsReceiverRef, myStream)
+
+                    peer.on('call', call => {
+                        call.answer(myStream)
+                        
+                        call.on('stream', userVideoStream => {
+                            addVideoStream(friendVideoAsReceiverRef, userVideoStream)
+                        })
+
+                        newUniqueSocketForVideoCallAsAReceiver.on("disconnect",() => {
+                            // stop video call anyhow
+                            console.log("stopping video call")
+                        })
+                        
+                    })
                 })
+
             })
 
-            newSocket.on("user-connected-on-video-call", (userId) => {
-                connectToNewUser(userId,stream,friendsVideo);
+            peer.on('open', id => {
+                console.log(id)
+                newUniqueSocketForVideoCallAsAReceiver.emit('i-want-to-join-video-call', `${videoCallPromptDataAsReceiver.videoCallFrom}123`, id);
             })
 
-        })
-        // .catch((err) => {
-        //     console.log(err);
-        // })
+            
+        }
+
         
-        peer.on("open", id => {
-            // console.log("peerid-frontend "+id);
-            newSocket.emit("join-room-on-video-call",roomId, id);
-        })
 
-        // clearing the socket on exit
-        return () => newSocket?.close();
+
+    }, [isVideoCallReceiver,videoCallPromptDataAsReceiver])
 
     
-    }, [])
 
-    const connectToNewUser = (userId, stream, friendsVideo) => {
-        console.log(userId)
-        const call = peer.call(userId, stream);
-        // video element to render a call
-        call.on("stream",friendsVideoStream => {
-            addVideoStream(friendsVideo, friendsVideoStream);
+    const makeAVideoCall = (videoCallFrom, videoCallTo) => {
+        
+        console.log("video call from  " + videoCallFrom + " video call to  " + videoCallTo);
+        
+
+        const newSocket = io(VIDEO_CALL_SERVER_URL, { query:{id: user.email}} ) //caller user email
+        
+        newSocket.on("connected", () => {
+            console.log("connected to video call server");
+            
+            newSocket.emit("ask-for-video-call",{"videoCallFrom":videoCallFrom, "videoCallTo":videoCallTo})
+        
+            newSocket.on("response-to-video-call-prompt", (data) => {
+                console.log("isReadyForVideoCall : " + data.isReadyForVideoCall);
+
+                if(data.isReadyForVideoCall) {
+                    // that means we have a confirmation for video call and other person is also online
+                    setIsVideoGridVisible(true);
+                    setCanIProceedToVideoCall(true);
+
+                    //doing a video call as a caller
+
+                    
+
+                    const newUniqueSocketForVideoCall = io(VIDEO_CALL_SERVER_URL, { query:{id: `${videoCallFrom}123`}} )
+                    
+                    newUniqueSocketForVideoCall.on("connected", () => {
+                        console.log("video call initiated");
+                        
+                        setCurrentSocket(newUniqueSocketForVideoCall);
+
+                        newUniqueSocketForVideoCall.on("on-receiving-receivers-userid", (ReceiversUserID) => {
+                            
+                            console.log(ReceiversUserID)
+                            
+                            // now make a call using peerjs to the userid I just got
+                            
+                            // getting my camera stream
+                            navigator.mediaDevices.getUserMedia({
+                                video: true,
+                                audio: true
+                            }).then(myStream => {
+
+                                setMyVideoStream(myStream);
+                                connectToReceiver(ReceiversUserID, myStream);
+                                addVideoStream(myVideoRef, myStream)
+                            })
+
+                            newUniqueSocketForVideoCall.on("disconnect", () => {
+                                //stop video call anyhow
+                                console.log("stopping video call")
+
+                            })
+                            
+                            
+                        })
+
+                    })
+
+                    
+                    
+                   
+
+                }else {
+                    //clear state 
+                    newSocket.close();
+                    setIsVideoGridVisible(false);
+                    setCanIProceedToVideoCall(false);
+                    alert("The person denied for video call !!!");
+                }
+
+            })
+        
+            // waiting for 60 second to someone accept the video call otherwise end the call
+            window.setTimeout(() => {
+                if(!isVideoGridVisible) {
+                    alert("either the person you are calling is offline or rejected you call");
+                    newSocket.close();
+                }
+            },60000)
+        
         })
 
-        call.on('close', () => {
-            console.log("stream closed")
+    }
+    
+    const connectToReceiver = (userID, myStream) => {
+
+        const call = peer.call(userID, myStream);
+        
+        call.on('stream', userVideoStream => {
+            addVideoStream(friendVideoRef, userVideoStream)
         })
+        
     }
 
-    const addVideoStream = (video, stream) => {
-        console.log(video)
-        video.srcObject = stream;
-        video.addEventListner("loadmetadata", () => {
-            video.play();
-        })
+    const addVideoStream = (videoRef, stream) => {
+        videoRef.current.srcObject = stream;
     }
-
-    // 1.32
 
     return (
-        <div>
-            {/* video of video call */}
-            <button onClick={() => console.log(socket)} >click</button>
-            <div id="video__videoGrid">
-                <video id="video__videoGrid__myVideo" width="300" height="300" autoPlay={true} muted={true} />
-                <video id="video__videoGrid__friendsVideo" width="300" height="300" autoPlay={true} muted={false} />
-            </div>
-        </div>
+        <>
+
+            {
+                isVideoCallReceiver
+                ?
+                (
+                    <div id="video__videoGrid">
+
+                        <video className="video__videoGrid__myVideo" width="200" height="200" ref={myVideoAsReceiverRef} autoPlay={true} muted={true} />
+                        <video className="video__videoGrid__friendsVideo" width="200" height="200" ref={friendVideoAsReceiverRef} autoPlay={true} muted={false} />
+                        <div className="video__videoGrid__endCallBtn">
+                            <IconButton color="primary" onClick={() => {
+                                
+                                peer.destroy();
+                                currentSocket.close();
+                                history.push("/videocall");
+                                
+
+                                dispatch({
+                                    type:"CLOSE_RECEIVERS_VIDEO_CALL_VIEW",
+                                    payload:{
+                                      wantToCloseReceiversVideoCallView: true
+                                    }
+                                }) 
+
+                            }} >
+                                <CallEndIcon style={{ fontSize: 30 }} />
+                            </IconButton>
+                        </div>
+                    </div>
+                )
+                :
+                (
+                    <>
+                        {
+                            isVideoGridVisible
+                            ?
+                            (
+                                <div id="video__videoGrid">
+                                    
+                                    <video className="video__videoGrid__myVideo" width="200" height="200" ref={myVideoRef} autoPlay={true} muted={true} />
+                                    <video className="video__videoGrid__friendsVideo" width="200" height="200" ref={friendVideoRef} autoPlay={true} muted={false} />
+                                    
+                                    <div className="video__videoGrid__endCallBtn">
+                                        <IconButton color="primary" onClick={() => {
+                                            
+                                            peer.destroy();
+                                            currentSocket.close();
+                                            history.push("/videocall");
+
+                                            dispatch({
+                                                type:"CLOSE_RECEIVERS_VIDEO_CALL_VIEW",
+                                                payload:{
+                                                  wantToCloseReceiversVideoCallView: true
+                                                }
+                                            })
+                                            
+                                        }} >
+                                            <CallEndIcon style={{ fontSize: 30 }} />
+                                        </IconButton>
+                                    </div>
+
+                                </div>
+                            )
+                            :
+                            (
+                                <WithSidebarLayout>
+                                    <div className="chat__userBox">
+
+                                        <h2>Start a Video Call</h2>
+
+                                        <List component="nav" aria-label="contacts">
+                                            {
+                                                usersList
+                                                ?
+                                                (
+                                                    <>
+                                                        {
+                                                            usersList.map((currentUser,index) => {
+                                                                return (
+                                                                    <ListItem key={index} button onClick={() => makeAVideoCall(user.email, currentUser.email) } >
+                                                                        <ListItemText primary={currentUser.email.split("@")[0]} />
+                                                                    </ListItem>
+                                                                )
+                                                            })
+                                                        }
+                                                    </>
+                                                )
+                                                :
+                                                ("")
+                                            }
+
+                                            {/* <ListItem button onClick={() => makeAVideoCall("aman@gmail.com","akku@gmail.com") } >
+                                                <ListItemText primary="akku@gmail.com" />
+                                            </ListItem> */}
+                                        </List>
+
+                                    </div>
+                                </WithSidebarLayout>
+                            )
+                        }
+                    </>
+                )
+            }
+
+            
+            
+        </>
     )
 }
 

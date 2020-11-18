@@ -1,52 +1,65 @@
 import React from 'react';
 import "./Topbar.css";
-import { TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import {MySimpleButton} from "../Buttons/Buttons";
+import { useStateValue } from '../../StateProvider';
+import {useHistory} from "react-router-dom";
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import CodeIcon from '@material-ui/icons/Code';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
+import { Button } from '@material-ui/core';
+
 
   
 
 function Topbar() {
 
-    const handleSearchField = (e) => {
-
-    }
+  const [{user},] = useStateValue();
+  const history = useHistory();
 
     return (
         <div className="topbar">
             
-            <form className="topbar__search">
-                <TextField
-                    variant="outlined"
-                    label="Search hashtags"
-                    type="text"
-                    size="small"
-                    onChange={(e) => handleSearchField(e)}
-                />
-                &nbsp;&nbsp;
-                <MySimpleButton
-                    disableElevation
-                    variant="contained"
-                    color="primary"
-                    // type="submit"
-                    // onClick={toggleSmallScreenSidebar}
-                    startIcon={<SearchIcon style={{ fontSize: 20 }} />}
-                >
-                    Search
-                </MySimpleButton>
-
-            </form>
-
             <div className="topbar__logo">
-                Social Media
-                {/* <img 
+                
+                <img 
                     alt="Social Media"
-                    // src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
-                /> */}
+                    src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
+                />
             </div>
+
+            <div className="topbar__section">
+
+                <Button
+                    disableElevation
+                    color="secondary"
+                    startIcon={<CreditCardIcon style={{ fontSize: 20 }} />}
+                >
+                    Try Premium
+                </Button>
+
+                <Button
+                    color="secondary"
+                    startIcon={<CodeIcon style={{ fontSize: 20 }} />}
+                >
+                    <a href="https://google.com" target="__blank">Hire Dev</a>
+                </Button>
+
+                <Button
+                    disableElevation
+                    color="secondary"
+                    startIcon={<AccountBoxIcon style={{ fontSize: 20 }} />}
+                    onClick={() => { history.push("/profile") }}
+                >
+                    {user.firstName} {user.lastName}
+                </Button>           
+
+            </div>
+
+             
+
+            
         
         </div>
     )
 }
 
-export default Topbar
+export default Topbar;

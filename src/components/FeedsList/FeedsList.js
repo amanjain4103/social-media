@@ -7,7 +7,19 @@ function FeedsList() {
 
     const [feeds,setFeeds] = useState(null);
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
-    const [{user,authToken},] = useStateValue();
+    const [{user, authToken, newFeedCount},] = useStateValue();
+
+    // updating my feeds when someone just upload a new feed when I am online
+    // useEffect(() => {
+    //     // console.log(state.newFeed);
+
+    //     let doesNewFeedArrives = false;
+    //     if(typeof newFeedCount !== undefined && newFeedCount!== null) {
+    //         doesNewFeedArrives = Object.keys(newFeed).length === 0 ? false: true;
+    //     }
+    //     console.log(doesNewFeedArrives)
+
+    // }, [newFeedCount])
 
     useEffect(() => {
         fetch(`${BASE_URL}/secured/feeds`, {
@@ -19,13 +31,14 @@ function FeedsList() {
         .then(res => {
             if(res.message==="feedsFetchedSuccessfully") {
                 setFeeds(res.feeds);
+                // console.log(newFeedCount);
                 // console.log(res.feeds);
             }else {
                 alert(res.message);
             }
         })
         .catch(err => alert(err))
-    },[BASE_URL,authToken])
+    },[BASE_URL,authToken,newFeedCount])
 
     return (
         <div className="feedslist">
@@ -33,9 +46,12 @@ function FeedsList() {
                 feeds!==null
                 ?
                 (
-                    <div>
+                    <>
                         {
-                            feeds.map((feed) => {
+                            feeds.map((feed,index) => {
+
+                                feed = feeds[feeds.length - 1 - index];
+                                
                                 return (
                                     <FeedCard
                                         key={feed._id} 
@@ -54,7 +70,7 @@ function FeedsList() {
                                 ) 
                             })
                         }
-                    </div>    
+                    </>    
                     
                 )
                 :

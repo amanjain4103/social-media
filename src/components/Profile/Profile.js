@@ -235,7 +235,7 @@ const Profile = (props) => {
                                         fullWidth
                                         type="submit"
                                     >
-                                        Upload Post
+                                        Upload Profile Pic
                                     </MyBasicButton>
                                 </div>
                             </form>

@@ -17,6 +17,7 @@
     text-transform: uppercase;
     color: #3f51b5;
     border-bottom: 1px solid gray;
+    padding-bottom: 10px;
 }
 
 .chat__chatting {

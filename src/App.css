@@ -1,0 +1,23 @@
+.App__videoCallPrompt {
+    display: flex;
+    flex-direction: column;
+    padding: 10%;
+}
+
+.App__videoCallButtons {
+    display: flex;
+}
+
+.App__videoCallReceiver {
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: white;
+    z-index: 10;
+
+}

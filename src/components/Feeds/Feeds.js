@@ -1,13 +1,15 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import "./Feeds.css";
 import Topbar from '../Topbar/Topbar';
 import FeedsList from '../FeedsList/FeedsList';
 // import ExploreTab from '../ExploreTab/ExploreTab';
 import WithSidebarLayout from '../../Layouts/WithSidebarLayout/WithSidebarLayout';
 
+
 function Feeds() {
+
     return (
-        <WithSidebarLayout>
+        <WithSidebarLayout> 
             <div className="feeds__right__topbar">
                 <Topbar />
             </div>
