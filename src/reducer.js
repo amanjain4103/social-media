@@ -28,6 +28,13 @@ export const reducer = (state, action) => {
                 },
                 authToken: action.payload.authToken
             }
+
+        case "REMOVE_USER":
+            return {
+                ...state,
+                user:{},
+                authToken:""
+            }
         case "SET_NEW_FEED_COUNT":
             return {
                 ...state,

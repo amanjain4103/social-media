@@ -7,10 +7,13 @@ import { List, ListItem, ListItemText, IconButton } from '@material-ui/core';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import {useHistory} from "react-router-dom";
 import WithSidebarLayout from '../../Layouts/WithSidebarLayout/WithSidebarLayout';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 
 const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsReceiver}) =>  {
 
     const history = useHistory();
+    const [isLoading, setIsLoading] = useState(true);
     const [{user}, dispatch] = useStateValue();
     const VIDEO_CALL_SERVER_URL = process.env.REACT_APP_VIDEO_CALL_SERVER_URL;
     const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -25,26 +28,25 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
     const [currentSocket, setCurrentSocket] = useState(null);
 
     const [peer, setPeer] = useState( new Peer(undefined, {
+                                        secure: true,
                                         path:"/peerjs",
-                                        host: "/", 
-                                        port:"3030" //node server port
+                                        host: "social-media-video-call-server.herokuapp.com", 
+                                        port:"443" //node server port
                                     }) )
 
     const [isVideoCallReceiver, setIsVideoCallReceiver] = useState(isItReceiver);
 
-    const doSomething = () => {
-
-    }
-
     // peer initialization
     // const peer = new Peer(undefined, {
+    //     secure: true,
     //     path:"/peerjs",
-    //     host: "/", 
-    //     port:"3030" //node server port
+    //     host: "social-media-video-call-server.herokuapp.com", 
+    //     port:"443" //node server port
     // })
 
     useEffect(() => {
         
+        setIsLoading(true);
         fetch(`${BASE_URL}/users/get-all-users`)
         .then(res => res.json())
         .then(res => {
@@ -52,6 +54,8 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
             if("usersFetchedSuccessfully") {
                 // console.log(res);
                 setUsersList( (res.usersList).filter((thisUser) => thisUser?.email !== user?.email ) );
+                setIsLoading(false);
+            
             }else {
                 alert(res.message)
             }
@@ -66,12 +70,13 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
     
 
     peer.on("close", () => {
-        console.log("peer closed ");
+        // console.log("peer closed ");
         
         setPeer( new Peer(undefined, {
+            secure: true,
             path:"/peerjs",
-            host: "/", 
-            port:"3030" //node server port
+            host: "social-media-video-call-server.herokuapp.com", 
+            port:"443" //node server port
         }) );
 
 
@@ -148,13 +153,9 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
             const newUniqueSocketForVideoCallAsAReceiver = io(VIDEO_CALL_SERVER_URL, { query:{id: `${videoCallPromptDataAsReceiver.videoCallFrom}123` }} )
             
             newUniqueSocketForVideoCallAsAReceiver.on("connected", () => {
-                console.log("initiated video call as a receiver")
+                // console.log("initiated video call as a receiver")
                 setCurrentSocket(newUniqueSocketForVideoCallAsAReceiver);
-                // peer.on('open', id => {
-                //     console.log(id)
-                //     newUniqueSocketForVideoCallAsAReceiver.emit('i-want-to-join-video-call', `${videoCallPromptDataAsReceiver.videoCallFrom}123`, id);
-                // })
-
+                
                 navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true
@@ -170,10 +171,7 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
                             addVideoStream(friendVideoAsReceiverRef, userVideoStream)
                         })
 
-                        newUniqueSocketForVideoCallAsAReceiver.on("disconnect",() => {
-                            // stop video call anyhow
-                            console.log("stopping video call")
-                        })
+                        
                         
                     })
                 })
@@ -181,7 +179,7 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
             })
 
             peer.on('open', id => {
-                console.log(id)
+                // console.log(id)
                 newUniqueSocketForVideoCallAsAReceiver.emit('i-want-to-join-video-call', `${videoCallPromptDataAsReceiver.videoCallFrom}123`, id);
             })
 
@@ -197,18 +195,18 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
 
     const makeAVideoCall = (videoCallFrom, videoCallTo) => {
         
-        console.log("video call from  " + videoCallFrom + " video call to  " + videoCallTo);
+        // console.log("video call from  " + videoCallFrom + " video call to  " + videoCallTo);
         
 
         const newSocket = io(VIDEO_CALL_SERVER_URL, { query:{id: user.email}} ) //caller user email
         
         newSocket.on("connected", () => {
-            console.log("connected to video call server");
+            // console.log("connected to video call server");
             
             newSocket.emit("ask-for-video-call",{"videoCallFrom":videoCallFrom, "videoCallTo":videoCallTo})
         
             newSocket.on("response-to-video-call-prompt", (data) => {
-                console.log("isReadyForVideoCall : " + data.isReadyForVideoCall);
+                // console.log("isReadyForVideoCall : " + data.isReadyForVideoCall);
 
                 if(data.isReadyForVideoCall) {
                     // that means we have a confirmation for video call and other person is also online
@@ -222,13 +220,13 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
                     const newUniqueSocketForVideoCall = io(VIDEO_CALL_SERVER_URL, { query:{id: `${videoCallFrom}123`}} )
                     
                     newUniqueSocketForVideoCall.on("connected", () => {
-                        console.log("video call initiated");
+                        // console.log("video call initiated");
                         
                         setCurrentSocket(newUniqueSocketForVideoCall);
 
                         newUniqueSocketForVideoCall.on("on-receiving-receivers-userid", (ReceiversUserID) => {
                             
-                            console.log(ReceiversUserID)
+                            // console.log(ReceiversUserID)
                             
                             // now make a call using peerjs to the userid I just got
                             
@@ -241,12 +239,6 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
                                 setMyVideoStream(myStream);
                                 connectToReceiver(ReceiversUserID, myStream);
                                 addVideoStream(myVideoRef, myStream)
-                            })
-
-                            newUniqueSocketForVideoCall.on("disconnect", () => {
-                                //stop video call anyhow
-                                console.log("stopping video call")
-
                             })
                             
                             
@@ -269,12 +261,12 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
             })
         
             // waiting for 60 second to someone accept the video call otherwise end the call
-            window.setTimeout(() => {
-                if(!isVideoGridVisible) {
-                    alert("either the person you are calling is offline or rejected you call");
-                    newSocket.close();
-                }
-            },60000)
+            // window.setTimeout(() => {
+            //     if(!isVideoGridVisible) {
+            //         alert("either the person you are calling is offline or rejected you call");
+            //         newSocket.close();
+            //     }
+            // },60000)
         
         })
 
@@ -362,35 +354,49 @@ const VideoCall = ({isVideoCallReceiver:isItReceiver, videoCallPromptDataAsRecei
                             :
                             (
                                 <WithSidebarLayout>
-                                    <div className="chat__userBox">
+                                    <div className="chat__userBox videocall__userBox">
 
                                         <h2>Start a Video Call</h2>
 
-                                        <List component="nav" aria-label="contacts">
-                                            {
-                                                usersList
-                                                ?
-                                                (
-                                                    <>
-                                                        {
-                                                            usersList.map((currentUser,index) => {
-                                                                return (
-                                                                    <ListItem key={index} button onClick={() => makeAVideoCall(user.email, currentUser.email) } >
-                                                                        <ListItemText primary={currentUser.email.split("@")[0]} />
-                                                                    </ListItem>
-                                                                )
-                                                            })
-                                                        }
-                                                    </>
-                                                )
-                                                :
-                                                ("")
-                                            }
+                                        {
+                                            isLoading
+                                            ?
+                                            (
+                                                <LinearProgress />
+                                            )
+                                            :
+                                            (
 
-                                            {/* <ListItem button onClick={() => makeAVideoCall("aman@gmail.com","akku@gmail.com") } >
-                                                <ListItemText primary="akku@gmail.com" />
-                                            </ListItem> */}
-                                        </List>
+                                                <List component="nav" aria-label="contacts">
+                                                    {
+                                                        usersList
+                                                        ?
+                                                        (
+                                                            <>
+                                                                {
+                                                                    usersList.map((currentUser,index) => {
+                                                                        return (
+                                                                            <ListItem key={index} button onClick={() => makeAVideoCall(user.email, currentUser.email) } >
+                                                                                <ListItemText primary={currentUser.email.split("@")[0]} />
+                                                                            </ListItem>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </>
+                                                        )
+                                                        :
+                                                        ("")
+                                                    }
+
+                                                    {/* <ListItem button onClick={() => makeAVideoCall("aman@gmail.com","akku@gmail.com") } >
+                                                        <ListItemText primary="akku@gmail.com" />
+                                                    </ListItem> */}
+                                                </List>
+
+                                            )
+                                        }
+
+                                        
 
                                     </div>
                                 </WithSidebarLayout>

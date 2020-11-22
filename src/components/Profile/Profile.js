@@ -10,7 +10,6 @@ import {useHistory} from "react-router-dom";
 import FullScreenOverlayLayout from '../../Layouts/FullScreenOverlayLayout/FullScreenOverlayLayout';
 import storage from "../../firebase.js"
 
-
 const useStyles = makeStyles((theme) => ({
     input: {
       display: 'none',
@@ -25,7 +24,8 @@ const Profile = (props) => {
 
     const [currentUser, setCurrentUser] = useState(null);
     const [postsForRenderingOnProile, setPostsForRenderingOnProile] = useState([]);
-    const [{user,authToken}, ] = useStateValue();
+    const [{user,authToken},dispatch ] = useStateValue();
+    const [isLoading, setIsLoading] = useState(true);
 
     // for upload functionality
     const [ isUploadCompVisible, setIsUploadCompVisible] = useState(false);
@@ -33,8 +33,16 @@ const Profile = (props) => {
     const [imageToBeUploaded,setImageToBeUploaded] = useState(null);
     const [progress, setProgress] = useState(0);
 
+    const logMeOut = () => {
+        
+        dispatch({
+            type:"REMOVE_USER"
+        })
+    }
+
     useEffect(() => {
 
+        setIsLoading(true);
         let emailToBeViewed = props.email;
         if(!props.email) {
             emailToBeViewed = user.email;
@@ -55,7 +63,7 @@ const Profile = (props) => {
                 })
 
                 setPostsForRenderingOnProile(res.posts.map(item => item.postSrc));
-                
+                setIsLoading(false);
             }else {
                 alert(res.message);
             }
@@ -111,9 +119,9 @@ const Profile = (props) => {
                     .getDownloadURL()
                     .then(url => {
                         // now you can save image url inside database
-                        console.log(url);
+                        // console.log(url);
                         
-                        console.log(authToken);
+                        // console.log(authToken);
 
                         fetch(`${BASE_URL}/secured/upload-profile-avatar`, {
                             method: "POST",
@@ -144,109 +152,134 @@ const Profile = (props) => {
 
     return ( 
         <WithSidebarLayout>
-            <div className="profile"> {/*make it scrollable*/}
-                <div className="profile__top">
 
-                    <div className="profile__top__left">
-                        <img 
-                            alt="profile"
-                            src={currentUser?.avatarSrc}
-                        />
-
-                        {/* file upload system */}
-                        <div className="profile__top__left__uploadButton">
-                            <p>Upload new profile pic</p>
-                            <Button color="primary" variant="contained" fullWidth onClick={() => {setIsUploadCompVisible(true)}}>
-                                Upload
-                            </Button>
-                        </div>
-
+            {
+                isLoading
+                ?
+                (
+                    <div className="profile__loading">
+                        <LinearProgress />
                     </div>
+                )
+                :
+                (
 
-                    <div className="profile__top__right">
-                        <div className="profile__top__right__section">
-                            <h2>{currentUser?.username}</h2>
-                            <Button
-                            //   variant="outlined"
-                              color="secondary"
-                            >
-                                Logout
-                            </Button>
-                        </div>
+                    <div className="profile"> {/*make it scrollable*/}
+                        <div className="profile__top">
 
-                        <div className="profile__top__right__section">
-                            <p>{currentUser?.numberOfPosts} <strong>posts</strong></p>
-                            <p>{currentUser?.numberOfLikes} <strong>Likes</strong></p>
+                            <div className="profile__top__left">
+                                <img 
+                                    alt="profile"
+                                    src={currentUser?.avatarSrc}
+                                />
 
-                        </div>
-
-                        <div className="profile__top__right__section">
-                            <h3>{currentUser?.firstName + " " + currentUser?.lastName}</h3>
-                        </div>
-
-                    </div>
-                </div> 
-
-                <div className="profile__bottom">
-                    <h2>Posts</h2>
-                    <MyPostList postsToBeShown={postsForRenderingOnProile} />
-                </div>
-
-                {   
-                    // upload popup component
-                    isUploadCompVisible
-                    ?
-                    (
-                        // upload system using full screen overlay layout
-
-                        <FullScreenOverlayLayout handleCloseFunc={handleCloseUploadComp}>
-                            <form className="sidebar__upload"  onSubmit={(e) => handleProfilePicUpload(e)}>
-
-                                <div className="sidebar__upload__formFields">
-                                    <LinearProgress color="primary" variant="determinate" value={progress} max="100" />
+                                {/* file upload system */}
+                                <div className="profile__top__left__uploadButton">
+                                    <p>Upload new profile pic</p>
+                                    <Button color="primary" variant="contained" fullWidth onClick={() => {setIsUploadCompVisible(true)}}>
+                                        Upload
+                                    </Button>
                                 </div>
 
+                            </div>
 
-                                {
-                                    imagePreviewSrc
-                                    ?
-                                    (
-                                        <div className="sidebar__upload__formFields">
-                                            <img 
-                                                alt="post to be uploaded"
-                                                src={imagePreviewSrc}
-                                                width="200"
-                                                height="200"
-                                            />
-                                        </div>
-                                    )
-                                    :
-                                    (
-                                        <div className="sidebar__upload__formFields">
-                                            <input type="file" accept="image/*" onChange={(e) => handleFileChange(e)} />
-                                        </div> 
-                                    )
-                                }
-
-                                <div className="sidebar__upload__formFields">
-                                    <MyBasicButton
-                                        variant="contained"
-                                        color="secondary"
-                                        fullWidth
-                                        type="submit"
+                            <div className="profile__top__right">
+                                <div className="profile__top__right__section">
+                                    <h2>{currentUser?.username}</h2>
+                                    <Button
+                                    color="secondary"
+                                    onClick={logMeOut}
                                     >
-                                        Upload Profile Pic
-                                    </MyBasicButton>
+                                        Logout
+                                    </Button>
                                 </div>
-                            </form>
-                        </FullScreenOverlayLayout>
-                        
-                    )
-                    :
-                    ("")
-                }
 
-            </div>
+                                <div className="profile__top__right__section">
+                                    <h3>{currentUser?.firstName + " " + currentUser?.lastName}</h3>
+                                </div>
+                                
+                                <div className="profile__top__right__section">
+                                    <p>
+                                        Dreamer And Doer 💪      <br />
+                                        Tea Lover ☕             <br />
+                                        Travelling 🧳             <br />
+                                        Fire Star Media is lit 🔥   
+                                    </p>
+
+                                </div>
+
+                                <div className="profile__top__right__section">
+                                    <p>{postsForRenderingOnProile?.length} <strong>posts</strong></p>
+                                </div>
+
+                            </div>
+                        </div> 
+
+                        <div className="profile__bottom">
+                            <h2>Posts</h2>
+                            <MyPostList postsToBeShown={postsForRenderingOnProile} />
+                        </div>
+
+                        {   
+                            // upload popup component
+                            isUploadCompVisible
+                            ?
+                            (
+                                // upload system using full screen overlay layout
+
+                                <FullScreenOverlayLayout handleCloseFunc={handleCloseUploadComp}>
+                                    <form className="sidebar__upload"  onSubmit={(e) => handleProfilePicUpload(e)}>
+
+                                        <div className="sidebar__upload__formFields">
+                                            <LinearProgress color="primary" variant="determinate" value={progress} max="100" />
+                                        </div>
+
+
+                                        {
+                                            imagePreviewSrc
+                                            ?
+                                            (
+                                                <div className="sidebar__upload__formFields">
+                                                    <img 
+                                                        alt="post to be uploaded"
+                                                        src={imagePreviewSrc}
+                                                        width="200"
+                                                        height="200"
+                                                    />
+                                                </div>
+                                            )
+                                            :
+                                            (
+                                                <div className="sidebar__upload__formFields">
+                                                    <input type="file" accept="image/*" onChange={(e) => handleFileChange(e)} />
+                                                </div> 
+                                            )
+                                        }
+
+                                        <div className="sidebar__upload__formFields">
+                                            <MyBasicButton
+                                                variant="contained"
+                                                color="secondary"
+                                                fullWidth
+                                                type="submit"
+                                            >
+                                                Upload Profile Pic
+                                            </MyBasicButton>
+                                        </div>
+                                    </form>
+                                </FullScreenOverlayLayout>
+                                
+                            )
+                            :
+                            ("")
+                        }
+
+                    </div>
+
+                )
+            }
+
+            
         </WithSidebarLayout>
     )
 }

@@ -7,7 +7,6 @@
 }
 
 .feedCard:hover {
-    cursor: pointer;
     box-shadow: 4px 4px 5px 1px lightgray;
 }
 

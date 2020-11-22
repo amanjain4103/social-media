@@ -4,10 +4,8 @@ import {Button, LinearProgress, TextField} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import ForumIcon from '@material-ui/icons/Forum';
 import VideoCallIcon from '@material-ui/icons/VideoCall';
-import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
-import WidgetsIcon from '@material-ui/icons/Widgets';
 import PublishIcon from '@material-ui/icons/Publish';
 import MenuOpenIcon from '@material-ui/icons/MenuOpen';
 import "./Sidebar.css";
@@ -29,10 +27,6 @@ function Sidebar() {
     const [imageToBeUploaded,setImageToBeUploaded] = useState(null);
     const [progress, setProgress] = useState(0);
     const [caption, setCaption] = useState(null);
-    
-    const handleProfile = () => {
-
-    }
 
     // realtime feeds on upload
     const [socketForFeedUpload,setSocketForFeedUpload] = useState(null);
@@ -43,7 +37,7 @@ function Sidebar() {
         var newSocket = io(BASE_URL,{ query:{id: "common@gmail.com"}});
         
         newSocket.on("connection-establish", data => {
-          console.log(data); 
+        //   console.log(data); 
           // connection is established
           setSocketForFeedUpload(newSocket);
         })
@@ -65,7 +59,7 @@ function Sidebar() {
         })
     
         newSocket.on('disconnect', function () {
-            console.log('disconnected with realtime feeds event');
+            // console.log('disconnected with realtime feeds event');
         });
     
         return () => newSocket?.close()
@@ -120,8 +114,6 @@ function Sidebar() {
                     <img 
                     alt="profile"
                     src={user.avatarSrc}
-                    // src="https://static.thenounproject.com/png/363640-200.png"
-                    // src="https://instagram.fjai1-1.fna.fbcdn.net/v/t51.2885-19/s150x150/95205316_245179196540438_1810417303259447296_n.jpg?_nc_ht=instagram.fjai1-1.fna.fbcdn.net&_nc_ohc=0-MdrDqZwI4AX_arLlU&oh=07bce87acc9055af5b2b7c667cc413b4&oe=5F9AB562"
                     className="sidebar__img"
                     />
                 </div>
@@ -156,26 +148,6 @@ function Sidebar() {
                         >
                             Chat
                         </SidebarButton>
-
-                        {/* <SidebarButton
-                            // variant="outlined" 
-                            color="secondary" 
-                            fullWidth
-                            onClick={() => { history.push("/signin") } }
-                            startIcon={<NotificationsActiveIcon />}
-                        >
-                            Notifications
-                        </SidebarButton>
-
-                        <SidebarButton
-                            // variant="outlined" 
-                            color="secondary" 
-                            fullWidth
-                            onClick={handleProfile}
-                            startIcon={<WidgetsIcon />}
-                        >
-                            Explore
-                        </SidebarButton> */}
 
                         <SidebarButton
                             // variant="outlined" 
@@ -272,7 +244,7 @@ function Sidebar() {
                         })
                         .then(res => res.json())
                         .then(res => {
-                            console.log(res)
+                            // console.log(res)
 
                             if(res.message === "uploadedSuccessfully") {
                                 
@@ -318,7 +290,6 @@ function Sidebar() {
                             <img 
                                 alt="logo"
                                 src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
-                                // src="https://www.freelogodesign.org/file/app/client/thumb/edbfd12a-30f8-44cb-863e-5ded84c169fc_200x200.png?1601360986964"
                             />
 
                         </div>

@@ -5,9 +5,7 @@ import "./SignUp.css";
 import MuiPhoneNumber from "material-ui-phone-number";
 import {validateEmail, validatePassword} from "../../validator"
 import {useHistory} from "react-router-dom";
-// import { useStateValue } from "../../StateProvider";
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import MyAlert from '../MyAlert/MyAlert';
 
 
 // already exposed by react
@@ -28,9 +26,7 @@ const SignUp = () => {
     const [errorOnSignup, setErrorOnSignup] = useState([]);
     const [otp, setOtp] = useState("");
     const [isSignupLoading, setIsSignupLoading] = useState(false)
-    // const [showAlert, setShowAlert] = useState(false);
 
-    // const [state, dispatch] = useStateValue();
     
     const handlePhoneNumber = (value) => {
         //phone number is a string
@@ -114,14 +110,6 @@ const SignUp = () => {
             
             setIsSignupLoading(true);
             
-            // console.log({
-            //     firstName: firstName,
-            //     lastName: lastName,
-            //     email: email,
-            //     password: password
-            // })
-
-
             //send mobile number for otp verification
             fetch(`${BASE_URL}/otp/send`, {
                 method:"POST",
@@ -145,12 +133,6 @@ const SignUp = () => {
                         lastName: lastName,
                         email: email
                     })
-
-                    // console.log({
-                    //     firstName: firstName,
-                    //     lastName: lastName,
-                    //     email: email
-                    // });
 
                 }else {
                     // may be some error occured
@@ -182,9 +164,6 @@ const SignUp = () => {
 
         e.preventDefault();
         // console.log("auth with server")
-
-        // setShowAlert(true);
-        // setTimeout(() => { setShowAlert(false) },6000)
 
         fetch(`${BASE_URL}/otp/verify`, {
             method:"POST",
@@ -230,7 +209,7 @@ const SignUp = () => {
                         <img 
                             alt="Social Media"
                             src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
-                            height="100"
+                            height="90"
                         />
                     </div>
 

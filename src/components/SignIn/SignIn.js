@@ -5,6 +5,7 @@ import "./SignIn.css";
 import { validateEmail, validatePassword } from '../../validator';
 import {useHistory} from "react-router-dom";
 import { useStateValue } from '../../StateProvider';
+import { CircularProgress } from '@material-ui/core';
 
   
 
@@ -15,6 +16,7 @@ const SignIn = () => {
     const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
+    const [isSigninLoading, setIsSigninLoading] = useState(false);
     const BASE_URL = process.env.REACT_APP_BASE_URL; //exposed by react already I am just using it
     const [, dispatch] = useStateValue();
     
@@ -47,7 +49,8 @@ const SignIn = () => {
     const handleSignin = (e) => {
         
         e.preventDefault();
-        
+        setIsSigninLoading(true);
+
         fetch(`${BASE_URL}/users/signin`, {
             method:"POST",
             headers: {
@@ -84,6 +87,8 @@ const SignIn = () => {
             else {
                 alert(res.message);
             }
+            setIsSigninLoading(false);
+
         })
         .catch(err => {
             console.log(err)
@@ -103,7 +108,7 @@ const SignIn = () => {
                         <img 
                             alt="Social Media"
                             src="https://firebasestorage.googleapis.com/v0/b/social-media-d971a.appspot.com/o/project-files%2FWhatsApp%20Image%202020-10-25%20at%201.37.55%20AM.jpeg?alt=media&token=7571f083-2b1b-4072-b277-ac928226635c"
-                            height="100"
+                            height="90"
                         />
                     </div>
                     
@@ -137,16 +142,35 @@ const SignIn = () => {
 
                         </div>
 
-                        <div className="signin__formFields">
-                            <MyBasicButton 
-                              variant="contained" 
-                              color="secondary" 
-                              fullWidth
-                              onClick={(e) => handleSignin(e)}
-                            >
-                               signin
-                            </MyBasicButton>
-                        </div>
+                        {
+                            isSigninLoading
+                            ?
+                            (
+                                <div className="signin__formFields">
+                                    <MyBasicButton
+                                        variant="outlined" 
+                                        color="secondary" 
+                                        fullWidth
+                                    >
+                                        <CircularProgress color="secondary" />
+                                    </MyBasicButton>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="signin__formFields">
+                                    <MyBasicButton 
+                                    variant="contained" 
+                                    color="secondary" 
+                                    fullWidth
+                                    onClick={(e) => handleSignin(e)}
+                                    >
+                                    signin
+                                    </MyBasicButton>
+                                </div>
+                            )
+                        }
+                        
                         
                         <br />
                         <hr />

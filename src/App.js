@@ -6,7 +6,6 @@ import SignUp from "./components/SignUp/SignUp";
 import Feeds from "./components/Feeds/Feeds";
 import { useStateValue } from './StateProvider';
 import Profile from './components/Profile/Profile';
-import Upload from './components/Upload/Upload';
 import PrivateRoute from "./PrivateRoute";
 import Chat from './components/Chat/Chat';
 import VideoCall from './components/VideoCall/VideoCall';
@@ -16,7 +15,6 @@ import { MyBasicButton } from './components/Buttons/Buttons';
 
 const App = () => {
   
-  const history = useHistory();
   const [{user,wantToCloseReceiversVideoCallView},dispatch] = useStateValue();
   const VIDEO_CALL_SERVER_URL = process.env.REACT_APP_VIDEO_CALL_SERVER_URL;
   const [isSomeoneAskingForAVideoCall, setIsSomeoneAskingForAVideoCall] = useState(false);
@@ -43,7 +41,7 @@ const App = () => {
     })
 
     newSocket.on("connected", () => {
-      console.log("listening for video calls");
+      // console.log("listening for video calls");
       // connection is established
       setVideoCallSocket(newSocket);
 
@@ -63,7 +61,7 @@ const App = () => {
     
 
     newSocket.on('disconnect', function () {
-        console.log('disconnected with realtime feeds event');
+        // console.log('disconnected with realtime feeds event');
     });
 
     return () => newSocket?.close()
@@ -146,6 +144,8 @@ const App = () => {
         }
 
         <Switch>
+
+          
           <Route path="/signin">
             <SignIn />
           </Route>
@@ -166,37 +166,14 @@ const App = () => {
             <Chat />
           </PrivateRoute>
 
-          <Route path="/videocall">
+          <PrivateRoute path="/videocall">
             <VideoCall isVideoCallReceiver={false} videoCallPromptDataAsReceiver={""} />
-          </Route>
+          </PrivateRoute>
 
-          {/* <Route path="/feeds">
-             <Feeds />
-          </Route> */}
-       
-          {/* <Route path="/profile">
-            <Profile email={user?.email}  />
-          </Route> */}
-          
+          <PrivateRoute path="/">
+            <SignIn />
+          </PrivateRoute>
 
-          {/* <Route path='/:username' render={(props) => {
-            return ( 
-              <div> 
-                {` Hello ${props.match.params.username}`}
-                {
-                  false
-                  ?
-                  <h1>hiie this is your profile</h1>
-                  :
-                  <h1>login to see profile</h1>
-                }
-              </div> 
-            )
-          }} /> */}
-
-          <Route path="/">
-            <Upload />
-          </Route>
 
         </Switch>
       </div>

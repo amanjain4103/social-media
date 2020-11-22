@@ -1,18 +1,17 @@
 import React, {useState,useEffect, useCallback} from 'react';
 import WithSidebarLayout from '../../Layouts/WithSidebarLayout/WithSidebarLayout';
-import { SidebarButton } from '../Buttons/Buttons';
-import {useHistory} from "react-router-dom";
 import "./Chat.css";
 import { Avatar, Button, IconButton, List, ListItem, ListItemText } from '@material-ui/core';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import io from "socket.io-client";
 import { useStateValue } from '../../StateProvider';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import VideoCall from '../VideoCall/VideoCall';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 
 const Chat = () => {
 
-    const history = useHistory();
+    const [isLoading, setIsLoading] = useState(true);
     const BASE_URL = process.env.REACT_APP_BASE_URL
     const [{user},] = useStateValue();
     const [saveNewChats, setSaveNewChats] = useState(false);
@@ -42,6 +41,7 @@ const Chat = () => {
         // console.log(sendToEmail);
         // console.log(fromEmail);
 
+        setIsLoading(true);
         // fetching initials messages from db
         fetch(`${BASE_URL}/users/get-all-users`)
         .then(res => res.json())
@@ -50,6 +50,7 @@ const Chat = () => {
             if("usersFetchedSuccessfully") {
                 // console.log(res);
                 setUsersList( (res.usersList).filter((thisUser) => thisUser?.email !== user?.email ) );
+                setIsLoading(false);
             }else {
                 alert(res.message)
             }
@@ -82,12 +83,13 @@ const Chat = () => {
                     .then(res => res.json())
                     .then(res => {
     
-                        if("gotPreviousChatSuccessFully") {
+                        if(res.message === "gotPreviousChatSuccessFully") {
                             // console.log(res);
                             setAllChatMessages([...res.previousChatMessages]);
+                            
 
                         }else if("noPreviousChats") {
-                            console.log(res.message);
+                            // console.log(res.message);
                         }else {
                             alert(res.message)
                         }
@@ -151,30 +153,44 @@ const Chat = () => {
 
                             <h2>Start a new conversation</h2>
 
-                            <List component="nav" aria-label="contacts">
-                                {
-                                    usersList
-                                    ?
-                                    (
-                                        <>
-                                            {
-                                                usersList.map((currentUser,index) => {
-                                                    return (
-                                                        <ListItem key={index} button onClick={() => handleUserForConversation(currentUser.email) } >
-                                                            <ListItemText primary={currentUser.email.split("@")[0]} />
-                                                        </ListItem>
-                                                    )
-                                                })
-                                            }
-                                        </>
-                                    )
-                                    :
-                                    ("")
-                                }
-                                {/* <ListItem button onClick={() => handleUserForConversation("aman@gmail.com") } >
-                                    <ListItemText primary="aman@gmail.com" />
-                                </ListItem> */}
-                            </List>
+                            {
+                                isLoading
+                                ?
+                                (
+                                    <LinearProgress />
+                                )
+                                :
+                                (
+
+                                    <List component="nav" aria-label="contacts">
+                                        {
+                                            usersList
+                                            ?
+                                            (
+                                                <>
+                                                    {
+                                                        usersList.map((currentUser,index) => {
+                                                            return (
+                                                                <ListItem key={index} button onClick={() => handleUserForConversation(currentUser.email) } >
+                                                                    <ListItemText primary={currentUser.email.split("@")[0]} />
+                                                                </ListItem>
+                                                            )
+                                                        })
+                                                    }
+                                                </>
+                                            )
+                                            :
+                                            ("")
+                                        }
+                                        {/* <ListItem button onClick={() => handleUserForConversation("aman@gmail.com") } >
+                                            <ListItemText primary="aman@gmail.com" />
+                                        </ListItem> */}
+                                    </List>
+
+                                )
+                            }
+
+                            
 
                         </div>
                     )
@@ -262,70 +278,8 @@ const Chat = () => {
 
                 </div> */}
 
-                {/* <div className="chat__chatting">
-                    <div className="chat__chatting__top">
-                        <div className="chat__chatting__top__left">
-                            <Avatar alt="username" src="" />
-                            <p>aman@gmail.com</p>
-                        </div>
-                        <IconButton color="secondary" >
-                            <VideocamIcon />
-                        </IconButton>
-                    </div>
-
-                    <div className="chat__messageContainer">
-
-                        {
-                            allChatMessages?.length > 0
-                            ? 
-                            (
-                                <>
-                                    {allChatMessages.map((item,index) => {
-                                        if(item.email === "akku@gmail.com") {
-                                            return (
-                                                <div key={index} className="chat__chatMessage__mine">
-                                                    <p className="chat__primaryMessage">{item.message}</p>
-                                                    <p className="chat__nameOnMessage__mine">you</p>
-                                                </div>
-                                            )
-                                        }else {
-                                            return (
-                                                <div key={index} className="chat__chatMessage">
-                                                    <p className="chat__primaryMessage">{item.message}</p>
-                                                    <p className="chat__nameOnMessage">{item.email}</p>
-                                                </div>
-                                            )
-                                        }
-                                    })}
-                                </>
-                            )
-                            :
-                            ("")
-                        }
-
-                        <div className="chat__chatMessage">
-                            <p className="chat__primaryMessage">message here</p>
-                            <p className="chat__nameOnMessage">user name</p>
-                        </div>
-                        <div className="chat__chatMessage__mine">
-                            <p className="chat__primaryMessage">message here</p>
-                            <p className="chat__nameOnMessage__mine">user name</p>
-                        </div>
-                        
-                    </div>
-
-                    <form className="chat__sendMessage" onSubmit={(e) => handleMessageSubmit(e)} >
-                        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)}/>
-                        <Button type="submit" color="secondary">
-                            send
-                        </Button>
-                    </form>
-                </div> */}
-                
             </div>
-
-            {/* <VideoCall roomId={"aman@gmail.com"} socketForVideoCall={socket} endVideoCall={() => {console.log("end video call")}} /> */}
-
+            
         </WithSidebarLayout>
     )
 }

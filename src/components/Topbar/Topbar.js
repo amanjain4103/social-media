@@ -40,7 +40,7 @@ function Topbar() {
                     color="secondary"
                     startIcon={<CodeIcon style={{ fontSize: 20 }} />}
                 >
-                    <a href="https://google.com" target="__blank">Hire Dev</a>
+                    <a href="https://www.linkedin.com/in/aman-jain-dev/" target="__blank">Hire Dev</a>
                 </Button>
 
                 <Button
