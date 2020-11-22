@@ -1,20 +1,20 @@
 .video__videoGrid__myVideo {
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100vw;
-    height: 100vh;
-    background-color: black;
-    border-radius: 15px;
-}
-
-.video__videoGrid__friendsVideo {
+    z-index: 5;
     position: fixed;
     left: 20px;
     top: 20px;
     background-color: black;
     border: 1px dashed white;
     border-radius: 10px
+}
+
+.video__videoGrid__friendsVideo {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
 }
 
 .video__videoGrid__endCallBtn {
@@ -33,7 +33,7 @@
 @media only screen and (max-width: 500px) {
 
     
-    .video__videoGrid__friendsVideo {
+    .video__videoGrid__myVideo {
         width: 130px;
         height: 130px;
     }
